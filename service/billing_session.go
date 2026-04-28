@@ -381,13 +381,20 @@ func NewBillingSession(c *gin.Context, relayInfo *relaycommon.RelayInfo, preCons
 		if subConsume <= 0 {
 			subConsume = 1
 		}
+		// 当前请求的有效 group：UsingGroup 优先（auto 跨组重试时已被改写），
+		// 没有则回落 user 自身 group。订阅按 group 锁定逻辑用此值。
+		callerGroup := strings.TrimSpace(relayInfo.UsingGroup)
+		if callerGroup == "" {
+			callerGroup = strings.TrimSpace(relayInfo.UserGroup)
+		}
 		session := &BillingSession{
 			relayInfo: relayInfo,
 			funding: &SubscriptionFunding{
-				requestId: relayInfo.RequestId,
-				userId:    relayInfo.UserId,
-				modelName: relayInfo.OriginModelName,
-				amount:    subConsume,
+				requestId:  relayInfo.RequestId,
+				userId:     relayInfo.UserId,
+				modelName:  relayInfo.OriginModelName,
+				usingGroup: callerGroup,
+				amount:     subConsume,
 			},
 		}
 		// 必须传 subConsume 而非 preConsumedQuota，保证 SubscriptionFunding.amount、
@@ -424,7 +431,11 @@ func NewBillingSession(c *gin.Context, relayInfo *relaycommon.RelayInfo, preCons
 		}
 		session, apiErr := trySubscription()
 		if apiErr != nil {
-			if apiErr.GetErrorCode() == types.ErrorCodeInsufficientUserQuota {
+			// fallback 到钱包：原有"额度不足"分支 + 新加"无匹配订阅 group"
+			// 后者是「订阅按 group 锁定」补丁的核心：本次请求的 group 不在
+			// 任何活跃订阅 plan 的 upgrade_group 范围内 → 自动走余额。
+			if apiErr.GetErrorCode() == types.ErrorCodeInsufficientUserQuota ||
+				strings.Contains(apiErr.Error(), "no active subscription") {
 				return tryWallet()
 			}
 			return nil, apiErr

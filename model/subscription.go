@@ -967,7 +967,14 @@ func maybeResetUserSubscriptionWithPlanTx(tx *gorm.DB, sub *UserSubscription, pl
 }
 
 // PreConsumeUserSubscription pre-consumes from any active subscription total quota.
-func PreConsumeUserSubscription(requestId string, userId int, modelName string, quotaType int, amount int64) (*SubscriptionPreConsumeResult, error) {
+//
+// usingGroup: 当前请求所用的 user-group（一般来自 token.Group 或 user.Group）。
+//   - 如果某个订阅 plan.UpgradeGroup != ""，则**仅当 usingGroup 等于 plan.UpgradeGroup**
+//     时该订阅才可被本次扣费选中；否则跳过该订阅。
+//   - 如果 plan.UpgradeGroup 为空（旧订阅 / 不绑定 group 的订阅），不做限制。
+//   - 所有订阅都不匹配时返回 "no active subscription"，由上层 billing_session
+//     在 subscription_first 模式下自动 fallback 到钱包扣费。
+func PreConsumeUserSubscription(requestId string, userId int, modelName string, usingGroup string, quotaType int, amount int64) (*SubscriptionPreConsumeResult, error) {
 	if userId <= 0 {
 		return nil, errors.New("invalid userId")
 	}
@@ -1013,6 +1020,30 @@ func PreConsumeUserSubscription(requestId string, userId int, modelName string, 
 		if len(subs) == 0 {
 			return errors.New("no active subscription")
 		}
+
+		// === [PATCH baicy0716] 订阅按 group 锁定 ===
+		// 规则：plan.UpgradeGroup != "" 时，仅当本次请求的 usingGroup 与之相等
+		// 才允许该订阅参与扣费。所有订阅都不匹配 → "no active subscription"
+		// → billing_session 自动 fallback 到钱包。
+		// plan.UpgradeGroup == "" 视为通用订阅（向后兼容旧数据）。
+		callerGroup := strings.TrimSpace(usingGroup)
+		filtered := make([]UserSubscription, 0, len(subs))
+		for _, candidate := range subs {
+			plan, err := getSubscriptionPlanByIdTx(tx, candidate.PlanId)
+			if err != nil {
+				return err
+			}
+			planGroup := strings.TrimSpace(plan.UpgradeGroup)
+			if planGroup == "" || strings.EqualFold(callerGroup, planGroup) {
+				filtered = append(filtered, candidate)
+			}
+		}
+		if len(filtered) == 0 {
+			return errors.New("no active subscription")
+		}
+		subs = filtered
+		// === [PATCH end] ===
+
 		for _, candidate := range subs {
 			sub := candidate
 			plan, err := getSubscriptionPlanByIdTx(tx, sub.PlanId)
