@@ -1,4 +1,5 @@
 name: Upstream watch
+# touch to re-register
 
 on:
   schedule:
