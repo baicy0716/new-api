@@ -1,0 +1,121 @@
+name: Preview build & deploy to staging
+
+# 推 feat-* 分支 → 自动构 preview 镜像 + 部署到 staging（端口 3010）
+# 用于在合并到 subscription-group-lock 前测试改动
+
+on:
+  push:
+    branches:
+      - 'feat-*'
+      - 'feat/*'
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: '要构建并部署到 staging 的 feat 分支'
+        required: true
+
+concurrency:
+  group: preview-deploy
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_tag: ${{ steps.version.outputs.value }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Compute preview tag
+        id: version
+        run: |
+          BRANCH="${GITHUB_REF_NAME//\//-}"   # feat/xxx → feat-xxx
+          SHA7=$(git rev-parse --short HEAD)
+          # 时间戳格式：YYYYMMDD-HHMM (UTC)
+          STAMP=$(date -u +'%Y%m%d-%H%M')
+          VERSION="preview-${BRANCH}-${STAMP}-${SHA7}"
+          echo "$VERSION" > VERSION
+          echo "value=$VERSION" >> $GITHUB_OUTPUT
+          echo "Preview tag: $VERSION"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push preview image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/new-api:${{ steps.version.outputs.value }}
+            ghcr.io/${{ github.repository_owner }}/new-api:preview-latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: false
+          sbom: false
+
+  deploy-staging:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Setup SSH
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/deploy
+          chmod 600 ~/.ssh/deploy
+          echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Update staging IMAGE_TAG + pull + restart
+        env:
+          HOST: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
+          IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
+        run: |
+          ssh -i ~/.ssh/deploy "$HOST" bash -s << EOF
+          set -e
+          cd /opt/newapi-staging
+          # 备份旧 .env
+          cp .env .env.bak-\$(date +%s) 2>/dev/null || true
+          # 写入新 IMAGE_TAG
+          echo "IMAGE_TAG=${IMAGE_TAG}" > .env
+          echo "→ 拉取镜像 ${IMAGE_TAG}"
+          docker compose pull 2>&1 | tail -3
+          echo "→ 重启容器"
+          docker compose up -d 2>&1 | tail -3
+          sleep 5
+          echo "→ 状态"
+          docker ps --filter name=newapi-staging --format 'table {{.Names}}\t{{.Status}}'
+          echo "→ 健康检查"
+          curl -sS -o /dev/null -w 'newapi-staging /api/status: HTTP %{http_code}\n' \
+            http://127.0.0.1:3010/api/status
+          EOF
+
+      - name: Notify on failure
+        if: failure()
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
+        run: |
+          if [ -n "$TG_BOT_TOKEN" ] && [ -n "$TG_CHAT_ID" ]; then
+            curl -sS -X POST "https://api.telegram.org/bot$TG_BOT_TOKEN/sendMessage" \
+              -d chat_id="$TG_CHAT_ID" \
+              -d text="❌ NewAPI staging 部署失败 · $IMAGE_TAG · $GITHUB_RUN_URL" || true
+          fi
