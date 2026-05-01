@@ -1,5 +1,4 @@
 name: Upstream watch
-# touch to re-register
 
 on:
   schedule:
@@ -20,12 +19,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          LATEST=$(gh release list --repo QuantumNous/new-api --limit 1 --json tagName,name,publishedAt,isPrerelease,url --jq '.[0]')
-          echo "tag=$(echo "$LATEST" | jq -r '.tagName')" >> $GITHUB_OUTPUT
+          LATEST=$(gh release list --repo QuantumNous/new-api --limit 1 --json tagName,name,publishedAt,isPrerelease --jq '.[0]')
+          TAG=$(echo "$LATEST" | jq -r '.tagName')
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "name=$(echo "$LATEST" | jq -r '.name')" >> $GITHUB_OUTPUT
           echo "published=$(echo "$LATEST" | jq -r '.publishedAt')" >> $GITHUB_OUTPUT
           echo "is_prerelease=$(echo "$LATEST" | jq -r '.isPrerelease')" >> $GITHUB_OUTPUT
-          echo "url=$(echo "$LATEST" | jq -r '.url')" >> $GITHUB_OUTPUT
+          echo "url=https://github.com/QuantumNous/new-api/releases/tag/$TAG" >> $GITHUB_OUTPUT
 
       - name: Get fork-vs-upstream behind count
         id: commits
