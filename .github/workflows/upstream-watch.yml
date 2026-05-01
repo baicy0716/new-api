@@ -35,19 +35,25 @@ jobs:
           AHEAD=$(gh api repos/QuantumNous/new-api/compare/main...baicy0716:new-api:subscription-group-lock --jq '.behind_by')
           echo "behind=$AHEAD" >> $GITHUB_OUTPUT
 
+      - name: Prepare workspace
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/state
+          ls -la $GITHUB_WORKSPACE
+
       - name: Download previous state
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: upstream-state
-          path: .
+          path: ${{ github.workspace }}/state
 
       - name: Compare with previous
         id: decide
+        working-directory: ${{ github.workspace }}/state
         run: |
           NEW="${{ steps.upstream.outputs.tag }}"
-          PREV=$(jq -r '.last_seen_tag // ""' .upstream-state.json 2>/dev/null || echo "")
-          echo "Previous: $PREV  New: $NEW"
+          PREV=$(jq -r '.last_seen_tag // ""' upstream-state.json 2>/dev/null || echo "")
+          echo "Previous: '$PREV'  New: '$NEW'"
           if [ -z "$PREV" ]; then
             echo "notify=first_run" >> $GITHUB_OUTPUT
           elif [ "$NEW" != "$PREV" ]; then
@@ -55,15 +61,19 @@ jobs:
           else
             echo "notify=no" >> $GITHUB_OUTPUT
           fi
-          jq -n --arg tag "$NEW" --arg ts "$(date -u +%FT%TZ)" '{last_seen_tag: $tag, last_check: $ts}' > .upstream-state.json
+          jq -n --arg tag "$NEW" --arg ts "$(date -u +%FT%TZ)" '{last_seen_tag: $tag, last_check: $ts}' > upstream-state.json
+          echo "--- written ---"
+          ls -la
+          cat upstream-state.json
 
       - name: Save new state
         uses: actions/upload-artifact@v4
         with:
           name: upstream-state
-          path: .upstream-state.json
+          path: ${{ github.workspace }}/state/upstream-state.json
           retention-days: 90
           overwrite: true
+          if-no-files-found: error
 
       - name: Notify on new release
         if: steps.decide.outputs.notify == 'new_release'
