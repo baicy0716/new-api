@@ -127,7 +127,7 @@ export function PublicHeader(props: PublicHeaderProps) {
       <header
         className={cn(
           isCmsVariant
-            ? 'kg-shell-cms-header sticky top-0 z-50'
+            ? 'kg-shell-cms-header fixed inset-x-0 top-0 z-50'
             : 'pointer-events-none fixed inset-x-0 top-0 z-50',
           props.className
         )}
