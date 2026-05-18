@@ -1,11 +1,4 @@
 import { useTranslation } from 'react-i18next'
-const DEFAULT_CMS_HOME_LINK = 'https://api.kuaigouai.com/share/'
-const DEFAULT_CMS_MODELS_LINK = 'https://api.kuaigouai.com/share/models'
-const DEFAULT_CMS_TOOLS_LINK = 'https://api.kuaigouai.com/share/tools'
-const DEFAULT_CMS_SHARE_LINK = 'https://api.kuaigouai.com/share/share'
-const DEFAULT_CMS_MARKETPLACE_LINK = 'https://api.kuaigouai.com/share/marketplace'
-const DEFAULT_CMS_ABOUT_LINK = 'https://api.kuaigouai.com/share/about'
-
 export type TopNavLink = {
   title: string
   href: string
@@ -20,8 +13,7 @@ export function useTopNavLinks(): TopNavLink[] {
   return [
     {
       title: t('首页'),
-      href: DEFAULT_CMS_HOME_LINK,
-      external: true,
+      href: '/',
     },
     {
       title: t('控制中心'),
@@ -29,28 +21,23 @@ export function useTopNavLinks(): TopNavLink[] {
     },
     {
       title: t('模型中心'),
-      href: DEFAULT_CMS_MODELS_LINK,
-      external: true,
+      href: '/pricing',
     },
     {
       title: t('API 配置'),
-      href: DEFAULT_CMS_TOOLS_LINK,
-      external: true,
+      href: '/tools',
     },
     {
       title: t('快狗分享'),
-      href: DEFAULT_CMS_SHARE_LINK,
-      external: true,
+      href: '/share-center',
     },
     {
       title: t('工具集市'),
-      href: DEFAULT_CMS_MARKETPLACE_LINK,
-      external: true,
+      href: '/marketplace',
     },
     {
       title: t('关于我们'),
-      href: DEFAULT_CMS_ABOUT_LINK,
-      external: true,
+      href: '/about',
     },
   ]
 }
