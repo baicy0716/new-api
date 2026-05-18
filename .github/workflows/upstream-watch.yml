@@ -9,9 +9,6 @@ permissions:
   contents: read
   actions: write
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   watch:
     runs-on: ubuntu-latest
@@ -41,7 +38,7 @@ jobs:
       - name: Restore previous state from cache
         # 用 cache 而不是 artifact，因为 artifact v4 默认不跨 run（要 run-id 显式指定）
         # cache 的 restore-keys 自动跨 run 模糊匹配，最适合状态持久化
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ github.workspace }}/state
           key: upstream-state-${{ github.run_id }}-${{ github.run_attempt }}
