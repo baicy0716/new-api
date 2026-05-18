@@ -172,7 +172,7 @@ export function PublicHeader(props: PublicHeaderProps) {
             </Link>
 
             {/* Desktop nav */}
-            <div className='hidden items-center gap-0.5 sm:flex'>
+            <div className='hidden items-center gap-0.5 min-[1400px]:flex'>
               {links.map((link, i) => {
                 const isActive = isPublicLinkActive(pathname, link.href)
                 if (link.external) {
@@ -263,17 +263,10 @@ export function PublicHeader(props: PublicHeaderProps) {
             </div>
 
             {/* Mobile: compact actions + hamburger */}
-            <div className='flex items-center gap-2 sm:hidden'>
+            <div className='flex items-center gap-2 min-[1400px]:hidden'>
               {showThemeSwitch && <ThemeSwitch />}
               {showAuthButtons && !loading && isAuthenticated && (
                 <>
-                  <Button
-                    size='sm'
-                    className='kg-shell-btn kg-shell-btn-primary h-8 rounded-lg px-3 text-xs font-medium'
-                    asChild
-                  >
-                    <Link to='/share/console'>{t('控制中心')}</Link>
-                  </Button>
                   <ProfileDropdown />
                 </>
               )}
@@ -311,7 +304,7 @@ export function PublicHeader(props: PublicHeaderProps) {
       {/* Mobile full-screen overlay */}
       <div
         className={cn(
-          'bg-background/98 fixed inset-0 z-40 backdrop-blur-2xl sm:pointer-events-none sm:hidden',
+          'bg-background/98 fixed inset-0 z-40 backdrop-blur-2xl min-[1400px]:pointer-events-none min-[1400px]:hidden',
           mobileOpen ? 'pointer-events-auto block' : 'pointer-events-none hidden'
         )}
       >
