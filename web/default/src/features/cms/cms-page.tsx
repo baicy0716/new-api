@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { PublicLayout } from '@/components/layout'
+import { Footer } from '@/components/layout/components/footer'
 import { getCmsPage } from './api'
 
 interface CmsPageProps {
@@ -23,7 +24,7 @@ export function CmsPage({ path }: CmsPageProps) {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['cms-page', path],
     queryFn: () => getCmsPage(path),
-    staleTime: 60_000,
+    staleTime: 5_000,
   })
 
   useEffect(() => {
@@ -92,10 +93,17 @@ export function CmsPage({ path }: CmsPageProps) {
 
   return (
     <PublicLayout showMainContainer={false}>
-      <main
-        className='min-h-screen pt-16 md:pt-20'
-        dangerouslySetInnerHTML={{ __html: data.html }}
-      />
+      <>
+        <main
+          className='min-h-screen pt-16 md:pt-20'
+          dangerouslySetInnerHTML={{ __html: data.html }}
+        />
+        {data.footerHtml ? (
+          <div dangerouslySetInnerHTML={{ __html: data.footerHtml }} />
+        ) : (
+          <Footer />
+        )}
+      </>
     </PublicLayout>
   )
 }

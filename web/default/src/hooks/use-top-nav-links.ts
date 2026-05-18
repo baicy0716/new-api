@@ -1,11 +1,5 @@
 import { useTranslation } from 'react-i18next'
-export type TopNavLink = {
-  title: string
-  href: string
-  disabled?: boolean
-  external?: boolean
-  openInNewTab?: boolean
-}
+import type { TopNavLink } from '@/components/layout'
 
 export function useTopNavLinks(): TopNavLink[] {
   const { t } = useTranslation()
@@ -50,6 +44,7 @@ export function useTopNavLinks(): TopNavLink[] {
     {
       title: t('更新动态'),
       href: '/share/changelog',
+      showIndicatorDot: true,
     },
   ]
 }

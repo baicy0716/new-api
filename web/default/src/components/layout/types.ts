@@ -78,6 +78,7 @@ export type TopNavLink = {
   title: string
   href: string
   isActive?: boolean
+  showIndicatorDot?: boolean
   disabled?: boolean
   external?: boolean
   openInNewTab?: boolean

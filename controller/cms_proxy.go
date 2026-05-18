@@ -22,6 +22,7 @@ const (
 var (
 	cmsMainPattern = regexp.MustCompile(`(?is)<main[^>]*>(.*?)</main>`)
 	cmsBodyPattern = regexp.MustCompile(`(?is)<body[^>]*>(.*?)</body>`)
+	cmsFooterPattern = regexp.MustCompile(`(?is)<footer[^>]*>.*?</footer>`)
 	cmsTitlePattern = regexp.MustCompile(`(?is)<title>(.*?)</title>`)
 	cmsDescPattern = regexp.MustCompile(`(?is)<meta[^>]+name=["']description["'][^>]+content=["'](.*?)["'][^>]*>`)
 	cmsStylePattern = regexp.MustCompile(`(?is)<style[^>]*>(.*?)</style>`)
@@ -48,6 +49,7 @@ type cmsPagePayload struct {
 	Title       string   `json:"title"`
 	Description string   `json:"description"`
 	HTML        string   `json:"html"`
+	FooterHTML  string   `json:"footerHtml"`
 	Styles      string   `json:"styles"`
 	Stylesheets []string `json:"stylesheets"`
 }
@@ -232,6 +234,7 @@ func GetCMSPage(c *gin.Context) {
 		Title:       extractFirstMatch(cmsTitlePattern, rawHTML),
 		Description: extractFirstMatch(cmsDescPattern, rawHTML),
 		HTML:        strings.TrimSpace(mainHTML),
+		FooterHTML:  strings.TrimSpace(cmsFooterPattern.FindString(rawHTML)),
 		Styles:      strings.TrimSpace(styles),
 		Stylesheets: extractStylesheets(rawHTML),
 	}

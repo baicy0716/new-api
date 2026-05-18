@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
@@ -50,6 +50,20 @@ function ExternalHeaderLink({
   )
 }
 
+function NavLinkLabel({ link }: { link: TopNavLink }) {
+  return (
+    <span className='inline-flex items-center gap-1.5'>
+      <span>{link.title}</span>
+      {link.showIndicatorDot ? (
+        <span
+          aria-hidden='true'
+          className='inline-block size-1.5 rounded-full bg-red-500'
+        />
+      ) : null}
+    </span>
+  )
+}
+
 export interface PublicHeaderProps {
   navLinks?: TopNavLink[]
   mobileLinks?: TopNavLink[]
@@ -80,7 +94,6 @@ export function PublicHeader(props: PublicHeaderProps) {
   } = props
 
   const { t } = useTranslation()
-  const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const { auth } = useAuthStore()
   const {
@@ -100,13 +113,6 @@ export function PublicHeader(props: PublicHeaderProps) {
   const links = dynamicLinks.length > 0 ? dynamicLinks : navLinks
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : ''
     return () => {
       document.body.style.overflow = ''
@@ -118,24 +124,18 @@ export function PublicHeader(props: PublicHeaderProps) {
       <header className='pointer-events-none fixed inset-x-0 top-0 z-50'>
         <div
           className={cn(
-            'pointer-events-auto mx-auto transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]',
-            scrolled ? 'max-w-[52rem] px-3 pt-3' : 'max-w-7xl px-4 pt-0 md:px-6'
+            'pointer-events-auto mx-auto max-w-7xl px-4 pt-3 md:px-6'
           )}
         >
           <nav
-            className={cn(
-              'flex items-center justify-between transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]',
-              scrolled
-                ? 'bg-background/60 ring-border/50 h-12 rounded-2xl pr-1.5 pl-4 shadow-[0_2px_16px_-6px_rgba(0,0,0,0.08),0_0_0_0.5px_rgba(0,0,0,0.02)] ring-[0.5px] backdrop-blur-2xl dark:shadow-[0_2px_16px_-6px_rgba(0,0,0,0.4)]'
-                : 'h-16 px-2'
-            )}
+            className='bg-background/88 ring-border/60 flex h-14 items-center justify-between rounded-2xl px-4 shadow-sm ring-[0.5px] backdrop-blur-xl'
           >
             {/* Logo */}
             <Link
               to={homeUrl}
-              className='group nav-brand flex shrink-0 items-center gap-2.5'
+              className='nav-brand flex shrink-0 items-center gap-2.5'
             >
-              <div className='flex size-7 shrink-0 items-center justify-center transition-all duration-300 group-hover:scale-105'>
+              <div className='flex size-7 shrink-0 items-center justify-center'>
                 {loading ? (
                   <Skeleton className='size-full rounded-lg' />
                 ) : customLogo ? (
@@ -163,9 +163,9 @@ export function PublicHeader(props: PublicHeaderProps) {
                     <ExternalHeaderLink
                       key={i}
                       link={link}
-                      className='nav-link text-muted-foreground hover:text-foreground rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors duration-200'
+                      className='nav-link text-muted-foreground hover:text-foreground rounded-lg px-3 py-1.5 text-[13px] font-medium'
                     >
-                      {t(link.title)}
+                      <NavLinkLabel link={{ ...link, title: t(link.title) }} />
                     </ExternalHeaderLink>
                   )
                 }
@@ -174,13 +174,13 @@ export function PublicHeader(props: PublicHeaderProps) {
                     key={i}
                     to={link.href}
                     className={cn(
-                      'nav-link rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors duration-200',
+                      'nav-link rounded-lg px-3 py-1.5 text-[13px] font-medium',
                       isActive
                         ? 'active text-foreground'
                         : 'text-muted-foreground hover:text-foreground'
                     )}
                   >
-                    {t(link.title)}
+                    <NavLinkLabel link={{ ...link, title: t(link.title) }} />
                   </Link>
                 )
               })}
@@ -255,26 +255,26 @@ export function PublicHeader(props: PublicHeaderProps) {
                 </>
               )}
               <button
-                className='hover:bg-muted/40 flex size-9 items-center justify-center rounded-lg transition-colors'
+                className='hover:bg-muted/40 flex size-9 items-center justify-center rounded-lg'
                 onClick={() => setMobileOpen((v) => !v)}
                 aria-label={t('Toggle navigation menu')}
               >
                 <div className='relative size-4'>
                   <span
                     className={cn(
-                      'absolute inset-x-0 block h-[1.5px] origin-center rounded-full bg-current transition-all duration-300',
+                      'absolute inset-x-0 block h-[1.5px] origin-center rounded-full bg-current',
                       mobileOpen ? 'top-[7px] rotate-45' : 'top-[3px]'
                     )}
                   />
                   <span
                     className={cn(
-                      'absolute inset-x-0 top-[7px] block h-[1.5px] rounded-full bg-current transition-all duration-300',
+                      'absolute inset-x-0 top-[7px] block h-[1.5px] rounded-full bg-current',
                       mobileOpen ? 'scale-x-0 opacity-0' : 'opacity-100'
                     )}
                   />
                   <span
                     className={cn(
-                      'absolute inset-x-0 block h-[1.5px] origin-center rounded-full bg-current transition-all duration-300',
+                      'absolute inset-x-0 block h-[1.5px] origin-center rounded-full bg-current',
                       mobileOpen ? 'top-[7px] -rotate-45' : 'top-[11px]'
                     )}
                   />
@@ -288,10 +288,8 @@ export function PublicHeader(props: PublicHeaderProps) {
       {/* Mobile full-screen overlay */}
       <div
         className={cn(
-          'bg-background/98 fixed inset-0 z-40 backdrop-blur-2xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] sm:pointer-events-none sm:hidden',
-          mobileOpen
-            ? 'pointer-events-auto opacity-100'
-            : 'pointer-events-none opacity-0'
+          'bg-background/98 fixed inset-0 z-40 backdrop-blur-2xl sm:pointer-events-none sm:hidden',
+          mobileOpen ? 'pointer-events-auto block' : 'pointer-events-none hidden'
         )}
       >
         <div className='flex h-full flex-col justify-between px-8 pt-20 pb-10'>
@@ -299,13 +297,9 @@ export function PublicHeader(props: PublicHeaderProps) {
             {links.map((link, i) => {
               const isActive = isPublicLinkActive(pathname, link.href)
               const linkClassName = cn(
-                'flex items-center gap-3 py-3 text-base font-medium tracking-tight transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
-                mobileOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0',
+                'flex items-center gap-3 py-3 text-base font-medium tracking-tight',
                 isActive ? 'text-foreground' : 'text-muted-foreground'
               )
-              const linkStyle = {
-                transitionDelay: mobileOpen ? `${100 + i * 50}ms` : '0ms',
-              }
 
               if (link.external) {
                 return (
@@ -315,7 +309,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                     onClick={() => setMobileOpen(false)}
                     className={linkClassName}
                   >
-                    <span style={linkStyle}>{t(link.title)}</span>
+                    <NavLinkLabel link={{ ...link, title: t(link.title) }} />
                   </ExternalHeaderLink>
                 )
               }
@@ -326,29 +320,22 @@ export function PublicHeader(props: PublicHeaderProps) {
                   to={link.href}
                   onClick={() => setMobileOpen(false)}
                   className={linkClassName}
-                  style={linkStyle}
                 >
-                  {t(link.title)}
+                  <NavLinkLabel link={{ ...link, title: t(link.title) }} />
                 </Link>
               )
             })}
           </nav>
 
           <div
-            className={cn(
-              'flex flex-col gap-3 transition-all duration-500',
-              mobileOpen
-                ? 'translate-y-0 opacity-100'
-                : 'translate-y-4 opacity-0'
-            )}
-            style={{ transitionDelay: mobileOpen ? '250ms' : '0ms' }}
+            className='flex flex-col gap-3'
           >
             {showAuthButtons && (
               isAuthenticated ? (
                 <Link
                   to='/share/console'
                   onClick={() => setMobileOpen(false)}
-                  className='bg-foreground text-background inline-flex h-10 items-center justify-center rounded-lg text-sm font-medium transition-opacity hover:opacity-90 active:opacity-80'
+                  className='bg-foreground text-background inline-flex h-10 items-center justify-center rounded-lg text-sm font-medium'
                 >
                   {t('控制中心')}
                 </Link>
@@ -357,14 +344,14 @@ export function PublicHeader(props: PublicHeaderProps) {
                   <Link
                     to='/share/login'
                     onClick={() => setMobileOpen(false)}
-                    className='bg-foreground text-background inline-flex h-10 items-center justify-center rounded-lg text-sm font-medium transition-opacity hover:opacity-90 active:opacity-80'
+                    className='bg-foreground text-background inline-flex h-10 items-center justify-center rounded-lg text-sm font-medium'
                   >
                     {t('登录')}
                   </Link>
                   <Link
                     to='/share/register'
                     onClick={() => setMobileOpen(false)}
-                    className='border-border text-foreground inline-flex h-10 items-center justify-center rounded-lg border text-sm font-medium transition-colors hover:bg-muted/50'
+                    className='border-border text-foreground inline-flex h-10 items-center justify-center rounded-lg border text-sm font-medium'
                   >
                     {t('免费注册')}
                   </Link>

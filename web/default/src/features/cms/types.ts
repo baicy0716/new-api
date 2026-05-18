@@ -3,6 +3,7 @@ export interface CmsPagePayload {
   title: string
   description: string
   html: string
+  footerHtml: string
   styles: string
   stylesheets: string[]
 }
