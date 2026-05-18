@@ -19,7 +19,7 @@ import { HeaderLogo } from './header-logo'
 
 function isPublicLinkActive(pathname: string, href: string) {
   if (href === '/' || href === '/share/') {
-    return pathname === '/' || pathname === '/share/'
+    return pathname === '/' || pathname === '/share/' || pathname === '/share'
   }
 
   return pathname === href || pathname.startsWith(`${href}/`)
@@ -172,94 +172,98 @@ export function PublicHeader(props: PublicHeaderProps) {
             </Link>
 
             {/* Desktop nav */}
-            <div className='hidden items-center gap-0.5 min-[1400px]:flex'>
-              {links.map((link, i) => {
-                const isActive = isPublicLinkActive(pathname, link.href)
-                if (link.external) {
+            <div className='hidden min-w-0 flex-1 items-center min-[1400px]:flex'>
+              <div className='kg-shell-links flex min-w-0 flex-1 items-center gap-0.5'>
+                {links.map((link, i) => {
+                  const isActive = isPublicLinkActive(pathname, link.href)
+                  if (link.external) {
+                    return (
+                      <ExternalHeaderLink
+                        key={i}
+                        link={link}
+                        className={cn(
+                          'kg-shell-link rounded-lg px-3 py-2 text-sm font-medium',
+                          link.showIndicatorDot
+                            ? 'kg-shell-link-highlight text-foreground'
+                            : 'text-muted-foreground hover:text-foreground'
+                        )}
+                      >
+                        <NavLinkLabel link={{ ...link, title: t(link.title) }} />
+                      </ExternalHeaderLink>
+                    )
+                  }
                   return (
-                    <ExternalHeaderLink
+                    <Link
                       key={i}
-                      link={link}
+                      to={link.href}
                       className={cn(
-                        'kg-shell-link rounded-lg px-3 py-1.5 text-[13px] font-medium',
-                        link.showIndicatorDot
-                          ? 'kg-shell-link-highlight text-foreground'
+                        'kg-shell-link rounded-lg px-3 py-2 text-sm font-medium',
+                        link.showIndicatorDot && 'kg-shell-link-highlight',
+                        isActive
+                          ? 'kg-shell-link-active text-foreground'
                           : 'text-muted-foreground hover:text-foreground'
                       )}
                     >
                       <NavLinkLabel link={{ ...link, title: t(link.title) }} />
-                    </ExternalHeaderLink>
+                    </Link>
                   )
-                }
-                return (
-                  <Link
-                    key={i}
-                    to={link.href}
-                    className={cn(
-                      'kg-shell-link rounded-lg px-3 py-1.5 text-[13px] font-medium',
-                      link.showIndicatorDot && 'kg-shell-link-highlight',
-                      isActive
-                        ? 'kg-shell-link-active text-foreground'
-                        : 'text-muted-foreground hover:text-foreground'
+                })}
+              </div>
+
+              <div className='kg-shell-toolbar flex shrink-0 items-center'>
+                {(showLanguageSwitcher ||
+                  showThemeSwitch ||
+                  showNotifications) && (
+                  <div className='bg-border/40 mx-2 h-4 w-px' />
+                )}
+
+                {showLanguageSwitcher && <LanguageSwitcher />}
+                {showThemeSwitch && <ThemeSwitch />}
+                {showNotifications && (
+                  <NotificationButton
+                    unreadCount={notifications.unreadCount}
+                    onClick={() => notifications.openDialog()}
+                  />
+                )}
+
+                {showAuthButtons && (
+                  <>
+                    <div className='bg-border/40 mx-1 h-4 w-px' />
+                    {loading ? (
+                      <Skeleton className='h-8 w-32 rounded-lg' />
+                    ) : isAuthenticated ? (
+                      <div className='kg-shell-cta flex items-center gap-2'>
+                        <Button
+                          size='sm'
+                          className='kg-shell-btn kg-shell-btn-primary h-8 rounded-lg px-3.5 text-xs font-medium'
+                          asChild
+                        >
+                          <Link to='/share/console'>{t('控制中心')}</Link>
+                        </Button>
+                        <ProfileDropdown />
+                      </div>
+                    ) : (
+                      <div className='kg-shell-cta flex items-center gap-2'>
+                        <Button
+                          size='sm'
+                          variant='ghost'
+                          className='kg-shell-btn kg-shell-btn-ghost h-8 rounded-lg px-3.5 text-xs font-medium'
+                          asChild
+                        >
+                          <Link to='/share/login'>{t('登录')}</Link>
+                        </Button>
+                        <Button
+                          size='sm'
+                          className='kg-shell-btn kg-shell-btn-primary h-8 rounded-lg px-3.5 text-xs font-medium'
+                          asChild
+                        >
+                          <Link to='/share/register'>{t('免费注册')}</Link>
+                        </Button>
+                      </div>
                     )}
-                  >
-                    <NavLinkLabel link={{ ...link, title: t(link.title) }} />
-                  </Link>
-                )
-              })}
-
-              {(showLanguageSwitcher ||
-                showThemeSwitch ||
-                showNotifications) && (
-                <div className='bg-border/40 mx-2 h-4 w-px' />
-              )}
-
-              {showLanguageSwitcher && <LanguageSwitcher />}
-              {showThemeSwitch && <ThemeSwitch />}
-              {showNotifications && (
-                <NotificationButton
-                  unreadCount={notifications.unreadCount}
-                  onClick={() => notifications.openDialog()}
-                />
-              )}
-
-              {showAuthButtons && (
-                <>
-                  <div className='bg-border/40 mx-1 h-4 w-px' />
-                  {loading ? (
-                    <Skeleton className='h-8 w-32 rounded-lg' />
-                  ) : isAuthenticated ? (
-                    <div className='kg-shell-cta flex items-center gap-2'>
-                      <Button
-                        size='sm'
-                        className='kg-shell-btn kg-shell-btn-primary h-8 rounded-lg px-3.5 text-xs font-medium'
-                        asChild
-                      >
-                        <Link to='/share/console'>{t('控制中心')}</Link>
-                      </Button>
-                      <ProfileDropdown />
-                    </div>
-                  ) : (
-                    <div className='kg-shell-cta flex items-center gap-2'>
-                      <Button
-                        size='sm'
-                        variant='ghost'
-                        className='kg-shell-btn kg-shell-btn-ghost h-8 rounded-lg px-3.5 text-xs font-medium'
-                        asChild
-                      >
-                        <Link to='/share/login'>{t('登录')}</Link>
-                      </Button>
-                      <Button
-                        size='sm'
-                        className='kg-shell-btn kg-shell-btn-primary h-8 rounded-lg px-3.5 text-xs font-medium'
-                        asChild
-                      >
-                        <Link to='/share/register'>{t('免费注册')}</Link>
-                      </Button>
-                    </div>
-                  )}
-                </>
-              )}
+                  </>
+                )}
+              </div>
             </div>
 
             {/* Mobile: compact actions + hamburger */}
