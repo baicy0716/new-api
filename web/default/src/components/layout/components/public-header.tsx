@@ -133,7 +133,7 @@ export function PublicHeader(props: PublicHeaderProps) {
             {/* Logo */}
             <Link
               to={homeUrl}
-              className='nav-brand flex shrink-0 items-center gap-2.5'
+              className='kg-shell-brand flex shrink-0 items-center gap-2.5'
             >
               <div className='flex size-7 shrink-0 items-center justify-center'>
                 {loading ? (
@@ -149,7 +149,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                   />
                 )}
               </div>
-              <span className='nav-brand-text text-sm font-semibold tracking-tight'>
+              <span className='kg-shell-brand-text text-sm font-semibold tracking-tight'>
                 {loading ? <Skeleton className='h-4 w-16' /> : displaySiteName}
               </span>
             </Link>
@@ -163,7 +163,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                     <ExternalHeaderLink
                       key={i}
                       link={link}
-                      className='nav-link text-muted-foreground hover:text-foreground rounded-lg px-3 py-1.5 text-[13px] font-medium'
+                      className='kg-shell-link text-muted-foreground hover:text-foreground rounded-lg px-3 py-1.5 text-[13px] font-medium'
                     >
                       <NavLinkLabel link={{ ...link, title: t(link.title) }} />
                     </ExternalHeaderLink>
@@ -174,9 +174,9 @@ export function PublicHeader(props: PublicHeaderProps) {
                     key={i}
                     to={link.href}
                     className={cn(
-                      'nav-link rounded-lg px-3 py-1.5 text-[13px] font-medium',
+                      'kg-shell-link rounded-lg px-3 py-1.5 text-[13px] font-medium',
                       isActive
-                        ? 'active text-foreground'
+                        ? 'kg-shell-link-active text-foreground'
                         : 'text-muted-foreground hover:text-foreground'
                     )}
                   >
@@ -206,10 +206,10 @@ export function PublicHeader(props: PublicHeaderProps) {
                   {loading ? (
                     <Skeleton className='h-8 w-32 rounded-lg' />
                   ) : isAuthenticated ? (
-                    <div className='nav-cta flex items-center gap-2'>
+                    <div className='kg-shell-cta flex items-center gap-2'>
                       <Button
                         size='sm'
-                        className='nav-btn nav-btn-primary h-8 rounded-lg px-3.5 text-xs font-medium'
+                        className='kg-shell-btn kg-shell-btn-primary h-8 rounded-lg px-3.5 text-xs font-medium'
                         asChild
                       >
                         <Link to='/share/console'>{t('控制中心')}</Link>
@@ -217,18 +217,18 @@ export function PublicHeader(props: PublicHeaderProps) {
                       <ProfileDropdown />
                     </div>
                   ) : (
-                    <div className='nav-cta flex items-center gap-2'>
+                    <div className='kg-shell-cta flex items-center gap-2'>
                       <Button
                         size='sm'
                         variant='ghost'
-                        className='nav-btn nav-btn-ghost h-8 rounded-lg px-3.5 text-xs font-medium'
+                        className='kg-shell-btn kg-shell-btn-ghost h-8 rounded-lg px-3.5 text-xs font-medium'
                         asChild
                       >
                         <Link to='/share/login'>{t('登录')}</Link>
                       </Button>
                       <Button
                         size='sm'
-                        className='nav-btn nav-btn-primary h-8 rounded-lg px-3.5 text-xs font-medium'
+                        className='kg-shell-btn kg-shell-btn-primary h-8 rounded-lg px-3.5 text-xs font-medium'
                         asChild
                       >
                         <Link to='/share/register'>{t('免费注册')}</Link>
@@ -246,7 +246,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                 <>
                   <Button
                     size='sm'
-                    className='nav-btn nav-btn-primary h-8 rounded-lg px-3 text-xs font-medium'
+                    className='kg-shell-btn kg-shell-btn-primary h-8 rounded-lg px-3 text-xs font-medium'
                     asChild
                   >
                     <Link to='/share/console'>{t('控制中心')}</Link>

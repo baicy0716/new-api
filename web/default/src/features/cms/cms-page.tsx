@@ -19,6 +19,25 @@ function upsertMetaDescription(content: string) {
   meta.setAttribute('content', content)
 }
 
+function scopeCmsStyles(styles: string) {
+  return styles
+    .replace(/(^|[\s,{])body::before/g, '$1.kg-cms-scope::before')
+    .replace(/(^|[\s,{])body::after/g, '$1.kg-cms-scope::after')
+    .replace(/(^|[\s,{])body(?![a-zA-Z0-9_-])/g, '$1.kg-cms-scope')
+    .replace(/\.nav-brand-text(?![-\w])/g, '.kg-cms-scope .nav-brand-text')
+    .replace(/\.nav-brand(?![-\w])/g, '.kg-cms-scope .nav-brand')
+    .replace(/\.nav-links(?![-\w])/g, '.kg-cms-scope .nav-links')
+    .replace(/\.nav-link(?![-\w])/g, '.kg-cms-scope .nav-link')
+    .replace(/\.nav-cta(?![-\w])/g, '.kg-cms-scope .nav-cta')
+    .replace(/\.nav-btn(?![-\w])/g, '.kg-cms-scope .nav-btn')
+    .replace(/\.nav-user-auth(?![-\w])/g, '.kg-cms-scope .nav-user-auth')
+    .replace(/\.nav-user-anon(?![-\w])/g, '.kg-cms-scope .nav-user-anon')
+    .replace(/\.nav-user-name(?![-\w])/g, '.kg-cms-scope .nav-user-name')
+    .replace(/\.nav-indicator(?![-\w])/g, '.kg-cms-scope .nav-indicator')
+    .replace(/\.nav-item(?![-\w])/g, '.kg-cms-scope .nav-item')
+    .replace(/\.nav-dropdown(?![-\w])/g, '.kg-cms-scope .nav-dropdown')
+}
+
 export function CmsPage({ path }: CmsPageProps) {
   const { t } = useTranslation()
   const { data, isLoading, isError } = useQuery({
@@ -37,7 +56,7 @@ export function CmsPage({ path }: CmsPageProps) {
 
     const styleEl = document.createElement('style')
     styleEl.setAttribute('data-kuaigou-cms', path)
-    styleEl.textContent = data.styles
+    styleEl.textContent = scopeCmsStyles(data.styles)
     document.head.appendChild(styleEl)
 
     const linkEls = data.stylesheets.map((href) => {
@@ -95,7 +114,7 @@ export function CmsPage({ path }: CmsPageProps) {
     <PublicLayout showMainContainer={false}>
       <>
         <main
-          className='min-h-screen pt-16 md:pt-20'
+          className='kg-cms-scope min-h-screen pt-16 md:pt-20'
           dangerouslySetInnerHTML={{ __html: data.html }}
         />
         {data.footerHtml ? (
