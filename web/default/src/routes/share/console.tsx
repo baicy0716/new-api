@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/about/')({
+export const Route = createFileRoute('/share/console')({
   beforeLoad: () => {
-    throw redirect({ to: '/share/about' })
+    throw redirect({ to: '/dashboard' })
   },
 })

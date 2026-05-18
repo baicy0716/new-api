@@ -1,6 +1,5 @@
 import z from 'zod'
-import { createFileRoute } from '@tanstack/react-router'
-import { Pricing } from '@/features/pricing'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
 const pricingSearchSchema = z.object({
   search: z.string().optional(),
@@ -17,5 +16,7 @@ const pricingSearchSchema = z.object({
 
 export const Route = createFileRoute('/pricing/')({
   validateSearch: pricingSearchSchema,
-  component: Pricing,
+  beforeLoad: () => {
+    throw redirect({ to: '/share/models' })
+  },
 })

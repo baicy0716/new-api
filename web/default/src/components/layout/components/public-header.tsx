@@ -17,6 +17,14 @@ import { defaultTopNavLinks } from '../config/top-nav.config'
 import type { TopNavLink } from '../types'
 import { HeaderLogo } from './header-logo'
 
+function isPublicLinkActive(pathname: string, href: string) {
+  if (href === '/' || href === '/share/') {
+    return pathname === '/' || pathname === '/share/'
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`)
+}
+
 function ExternalHeaderLink({
   link,
   className,
@@ -66,7 +74,7 @@ export function PublicHeader(props: PublicHeaderProps) {
     showLanguageSwitcher = true,
     logo: customLogo,
     siteName: customSiteName,
-    homeUrl = '/',
+    homeUrl = '/share/',
     showAuthButtons = true,
     showNotifications = true,
   } = props
@@ -125,7 +133,7 @@ export function PublicHeader(props: PublicHeaderProps) {
             {/* Logo */}
             <Link
               to={homeUrl}
-              className='group flex shrink-0 items-center gap-2.5'
+              className='group nav-brand flex shrink-0 items-center gap-2.5'
             >
               <div className='flex size-7 shrink-0 items-center justify-center transition-all duration-300 group-hover:scale-105'>
                 {loading ? (
@@ -141,7 +149,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                   />
                 )}
               </div>
-              <span className='text-sm font-semibold tracking-tight'>
+              <span className='nav-brand-text text-sm font-semibold tracking-tight'>
                 {loading ? <Skeleton className='h-4 w-16' /> : displaySiteName}
               </span>
             </Link>
@@ -149,13 +157,13 @@ export function PublicHeader(props: PublicHeaderProps) {
             {/* Desktop nav */}
             <div className='hidden items-center gap-0.5 sm:flex'>
               {links.map((link, i) => {
-                const isActive = pathname === link.href
+                const isActive = isPublicLinkActive(pathname, link.href)
                 if (link.external) {
                   return (
                     <ExternalHeaderLink
                       key={i}
                       link={link}
-                      className='text-muted-foreground hover:text-foreground rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors duration-200'
+                      className='nav-link text-muted-foreground hover:text-foreground rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors duration-200'
                     >
                       {t(link.title)}
                     </ExternalHeaderLink>
@@ -166,9 +174,9 @@ export function PublicHeader(props: PublicHeaderProps) {
                     key={i}
                     to={link.href}
                     className={cn(
-                      'rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors duration-200',
+                      'nav-link rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors duration-200',
                       isActive
-                        ? 'text-foreground'
+                        ? 'active text-foreground'
                         : 'text-muted-foreground hover:text-foreground'
                     )}
                   >
@@ -198,23 +206,32 @@ export function PublicHeader(props: PublicHeaderProps) {
                   {loading ? (
                     <Skeleton className='h-8 w-32 rounded-lg' />
                   ) : isAuthenticated ? (
-                    <ProfileDropdown />
+                    <div className='nav-cta flex items-center gap-2'>
+                      <Button
+                        size='sm'
+                        className='nav-btn nav-btn-primary h-8 rounded-lg px-3.5 text-xs font-medium'
+                        asChild
+                      >
+                        <Link to='/share/console'>{t('控制中心')}</Link>
+                      </Button>
+                      <ProfileDropdown />
+                    </div>
                   ) : (
-                    <div className='flex items-center gap-2'>
+                    <div className='nav-cta flex items-center gap-2'>
                       <Button
                         size='sm'
                         variant='ghost'
-                        className='h-8 rounded-lg px-3.5 text-xs font-medium'
+                        className='nav-btn nav-btn-ghost h-8 rounded-lg px-3.5 text-xs font-medium'
                         asChild
                       >
-                        <Link to='/sign-in'>{t('Sign in')}</Link>
+                        <Link to='/share/login'>{t('登录')}</Link>
                       </Button>
                       <Button
                         size='sm'
-                        className='h-8 rounded-lg px-3.5 text-xs font-medium'
+                        className='nav-btn nav-btn-primary h-8 rounded-lg px-3.5 text-xs font-medium'
                         asChild
                       >
-                        <Link to='/sign-up'>{t('Sign up')}</Link>
+                        <Link to='/share/register'>{t('免费注册')}</Link>
                       </Button>
                     </div>
                   )}
@@ -226,7 +243,16 @@ export function PublicHeader(props: PublicHeaderProps) {
             <div className='flex items-center gap-2 sm:hidden'>
               {showThemeSwitch && <ThemeSwitch />}
               {showAuthButtons && !loading && isAuthenticated && (
-                <ProfileDropdown />
+                <>
+                  <Button
+                    size='sm'
+                    className='nav-btn nav-btn-primary h-8 rounded-lg px-3 text-xs font-medium'
+                    asChild
+                  >
+                    <Link to='/share/console'>{t('控制中心')}</Link>
+                  </Button>
+                  <ProfileDropdown />
+                </>
               )}
               <button
                 className='hover:bg-muted/40 flex size-9 items-center justify-center rounded-lg transition-colors'
@@ -271,7 +297,7 @@ export function PublicHeader(props: PublicHeaderProps) {
         <div className='flex h-full flex-col justify-between px-8 pt-20 pb-10'>
           <nav className='flex flex-col gap-1'>
             {links.map((link, i) => {
-              const isActive = pathname === link.href
+              const isActive = isPublicLinkActive(pathname, link.href)
               const linkClassName = cn(
                 'flex items-center gap-3 py-3 text-base font-medium tracking-tight transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
                 mobileOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0',
@@ -320,27 +346,27 @@ export function PublicHeader(props: PublicHeaderProps) {
             {showAuthButtons && (
               isAuthenticated ? (
                 <Link
-                  to='/dashboard'
+                  to='/share/console'
                   onClick={() => setMobileOpen(false)}
                   className='bg-foreground text-background inline-flex h-10 items-center justify-center rounded-lg text-sm font-medium transition-opacity hover:opacity-90 active:opacity-80'
                 >
-                  {t('Go to Dashboard')}
+                  {t('控制中心')}
                 </Link>
               ) : (
                 <div className='flex flex-col gap-3'>
                   <Link
-                    to='/sign-in'
+                    to='/share/login'
                     onClick={() => setMobileOpen(false)}
                     className='bg-foreground text-background inline-flex h-10 items-center justify-center rounded-lg text-sm font-medium transition-opacity hover:opacity-90 active:opacity-80'
                   >
-                    {t('Sign in')}
+                    {t('登录')}
                   </Link>
                   <Link
-                    to='/sign-up'
+                    to='/share/register'
                     onClick={() => setMobileOpen(false)}
                     className='border-border text-foreground inline-flex h-10 items-center justify-center rounded-lg border text-sm font-medium transition-colors hover:bg-muted/50'
                   >
-                    {t('Sign up')}
+                    {t('免费注册')}
                   </Link>
                 </div>
               )

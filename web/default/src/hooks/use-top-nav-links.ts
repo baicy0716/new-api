@@ -13,31 +13,43 @@ export function useTopNavLinks(): TopNavLink[] {
   return [
     {
       title: t('首页'),
-      href: '/',
-    },
-    {
-      title: t('控制中心'),
-      href: '/dashboard',
+      href: '/share/',
     },
     {
       title: t('模型中心'),
-      href: '/pricing',
+      href: '/share/models',
     },
     {
       title: t('API 配置'),
-      href: '/tools',
+      href: '/share/tools',
     },
     {
       title: t('快狗分享'),
-      href: '/share-center',
+      href: '/share/share',
     },
     {
       title: t('工具集市'),
-      href: '/marketplace',
+      href: '/share/marketplace',
+    },
+    {
+      title: t('常见问题'),
+      href: '/share/faq',
+    },
+    {
+      title: t('体验中心'),
+      href: '/share/playground',
+    },
+    {
+      title: t('海外代理'),
+      href: '/share/services',
     },
     {
       title: t('关于我们'),
-      href: '/about',
+      href: '/share/about',
+    },
+    {
+      title: t('更新动态'),
+      href: '/share/changelog',
     },
   ]
 }
