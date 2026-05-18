@@ -4,6 +4,9 @@ import { useAuthStore } from '@/stores/auth-store'
 import { useStatus } from '@/hooks/use-status'
 
 const DEFAULT_DOCS_LINK = 'https://docs.newapi.pro'
+const DEFAULT_CMS_TOOLS_LINK = 'https://api.kuaigouai.com/share/tools'
+const DEFAULT_CMS_SHARE_LINK = 'https://api.kuaigouai.com/share/share'
+const DEFAULT_CMS_MARKETPLACE_LINK = 'https://api.kuaigouai.com/share/marketplace'
 
 export type TopNavLink = {
   title: string
@@ -19,6 +22,12 @@ const DEFAULT_HEADER_NAV_MODULES = {
   pricing: { enabled: true, requireAuth: false },
   docs: true,
   about: true,
+}
+
+const DEFAULT_CMS_NAV_MODULES = {
+  tools: true,
+  share: true,
+  marketplace: true,
 }
 
 /**
@@ -59,35 +68,62 @@ export function useTopNavLinks(): TopNavLink[] {
 
   const links: TopNavLink[] = []
 
-  // Home
+  const cmsNavModules = DEFAULT_CMS_NAV_MODULES
+
+  // Home -> CMS 首页语义
   if (modules?.home !== false) {
-    links.push({ title: t('Home'), href: '/' })
+    links.push({ title: t('首页'), href: '/' })
   }
 
-  // Console -> /dashboard (new console path)
+  // Console -> 控制中心
   if (modules?.console !== false) {
-    links.push({ title: t('Console'), href: '/dashboard' })
+    links.push({ title: t('控制中心'), href: '/dashboard' })
   }
 
-  // Pricing
+  // 模型中心：先映射到当前新前端已有的定价/模型广场页
   const pricing = modules?.pricing
   if (pricing && typeof pricing === 'object' && pricing.enabled) {
     const disabled = pricing.requireAuth && !isAuthed
-    links.push({ title: t('Model Square'), href: '/pricing', disabled })
+    links.push({ title: t('模型中心'), href: '/pricing', disabled })
   }
 
-  // Docs (supports external links)
-  if (modules?.docs !== false) {
-    if (docsLink) {
-      links.push({ title: t('Docs'), href: docsLink, external: true })
-    } else {
-      links.push({ title: t('Docs'), href: DEFAULT_DOCS_LINK, external: true })
-    }
+  // API 配置：当前 staging 先挂到现有 CMS 页面
+  if (cmsNavModules.tools) {
+    links.push({
+      title: t('API 配置'),
+      href: docsLink || DEFAULT_CMS_TOOLS_LINK,
+      external: true,
+    })
   }
 
-  // About
+  if (cmsNavModules.share) {
+    links.push({
+      title: t('快狗分享'),
+      href: DEFAULT_CMS_SHARE_LINK,
+      external: true,
+    })
+  }
+
+  if (cmsNavModules.marketplace) {
+    links.push({
+      title: t('工具集市'),
+      href: DEFAULT_CMS_MARKETPLACE_LINK,
+      external: true,
+    })
+  }
+
+  // About -> 关于我们
   if (modules?.about !== false) {
-    links.push({ title: t('About'), href: '/about' })
+    links.push({ title: t('关于我们'), href: '/about' })
+  }
+
+  // docs 开关保留一个兜底出口，防止后台只关心文档入口时整项消失
+  if (modules?.docs !== false && !cmsNavModules.tools) {
+    links.push({
+      title: t('Docs'),
+      href: docsLink || DEFAULT_DOCS_LINK,
+      external: true,
+    })
   }
 
   return links
