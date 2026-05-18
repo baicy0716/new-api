@@ -1,4 +1,6 @@
+import { Link } from '@tanstack/react-router'
 import { useNotifications } from '@/hooks/use-notifications'
+import { useSystemConfig } from '@/hooks/use-system-config'
 import { useTopNavLinks } from '@/hooks/use-top-nav-links'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { LanguageSwitcher } from '@/components/language-switcher'
@@ -6,9 +8,11 @@ import { NotificationButton } from '@/components/notification-button'
 import { NotificationDialog } from '@/components/notification-dialog'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
+import { Skeleton } from '@/components/ui/skeleton'
 import { defaultTopNavLinks } from '../config/top-nav.config'
 import { type TopNavLink } from '../types'
 import { Header } from './header'
+import { HeaderLogo } from './header-logo'
 import { TopNav } from './top-nav'
 
 /**
@@ -87,20 +91,53 @@ export function AppHeader({
   // Prioritize dynamically generated links from backend
   const dynamicLinks = useTopNavLinks()
   const links = dynamicLinks.length > 0 ? dynamicLinks : navLinks
+  const { systemName, logo, loading, logoLoaded } = useSystemConfig()
 
   // Notifications hook
   const notifications = useNotifications()
 
   // Determine left content: custom content > navigation bar > null
   const leftSection =
-    leftContent || (showTopNav ? <TopNav links={links} /> : null)
+    leftContent ||
+    (showTopNav ? (
+      <div className='flex min-w-0 flex-1 items-center gap-3 md:gap-4'>
+        <Link
+          to='/'
+          className='hidden min-w-0 shrink-0 items-center gap-2 md:flex'
+        >
+          <div className='flex size-8 shrink-0 items-center justify-center rounded-xl border bg-muted/40'>
+            {loading ? (
+              <Skeleton className='size-6 rounded-lg' />
+            ) : (
+              <HeaderLogo
+                src={logo}
+                loading={loading}
+                logoLoaded={logoLoaded}
+                className='size-6 rounded-lg object-contain'
+              />
+            )}
+          </div>
+          <div className='hidden min-w-0 xl:block'>
+            {loading ? (
+              <Skeleton className='h-4 w-28' />
+            ) : (
+              <span className='block truncate text-sm font-semibold tracking-tight'>
+                {systemName}
+              </span>
+            )}
+          </div>
+        </Link>
+
+        <TopNav links={links} className='min-w-0 flex-1' />
+      </div>
+    ) : null)
 
   return (
     <>
       <Header>
         {leftSection}
         {rightContent ?? (
-          <div className='ms-auto flex items-center space-x-4'>
+          <div className='ms-auto flex shrink-0 items-center space-x-4'>
             {showSearch && <Search />}
             {showNotifications && (
               <NotificationButton

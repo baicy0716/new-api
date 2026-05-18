@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { useStatus } from '@/hooks/use-status'
 
+const DEFAULT_DOCS_LINK = 'https://docs.newapi.pro'
+
 export type TopNavLink = {
   title: string
   href: string
@@ -39,11 +41,11 @@ export function useTopNavLinks(): TopNavLink[] {
   const modules = useMemo(() => {
     const raw = status?.HeaderNavModules
     // If empty string, null, or undefined, use default config
-    if (!raw || (raw as string).trim() === '') {
+    if (typeof raw !== 'string' || raw.trim() === '') {
       return DEFAULT_HEADER_NAV_MODULES
     }
     try {
-      return JSON.parse(raw as string)
+      return JSON.parse(raw)
     } catch {
       // Parse failed, use default config
       return DEFAULT_HEADER_NAV_MODULES
@@ -79,7 +81,7 @@ export function useTopNavLinks(): TopNavLink[] {
     if (docsLink) {
       links.push({ title: t('Docs'), href: docsLink, external: true })
     } else {
-      links.push({ title: t('Docs'), href: '/docs' })
+      links.push({ title: t('Docs'), href: DEFAULT_DOCS_LINK, external: true })
     }
   }
 

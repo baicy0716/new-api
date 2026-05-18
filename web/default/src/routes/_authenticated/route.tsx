@@ -1,6 +1,7 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useAuthStore } from '@/stores/auth-store'
 import { getSelf } from '@/lib/api'
+import { buildRedirectFromLocation } from '@/lib/navigation'
 import { AuthenticatedLayout } from '@/components/layout'
 
 // 内存中的验证标记，避免同一会话中重复验证
@@ -14,7 +15,7 @@ export const Route = createFileRoute('/_authenticated')({
     if (!auth.user) {
       throw redirect({
         to: '/sign-in',
-        search: { redirect: location.href },
+        search: { redirect: buildRedirectFromLocation(location) },
       })
     }
 
@@ -30,7 +31,7 @@ export const Route = createFileRoute('/_authenticated')({
         auth.reset()
         throw redirect({
           to: '/sign-in',
-          search: { redirect: location.href },
+          search: { redirect: buildRedirectFromLocation(location) },
         })
       }
     }

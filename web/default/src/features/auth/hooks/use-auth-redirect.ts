@@ -2,6 +2,10 @@ import { useNavigate } from '@tanstack/react-router'
 import i18n from 'i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { getSelf } from '@/lib/api'
+import {
+  DEFAULT_AUTH_REDIRECT,
+  normalizeInternalRedirect,
+} from '@/lib/navigation'
 import type { User } from '@/features/users/types'
 import { saveUserId } from '../lib/storage'
 
@@ -68,7 +72,10 @@ export function useAuthRedirect() {
     }
 
     // Navigate to target page
-    const targetPath = redirectTo || '/dashboard'
+    const targetPath = normalizeInternalRedirect(
+      redirectTo,
+      DEFAULT_AUTH_REDIRECT
+    )
     navigate({ to: targetPath, replace: true })
   }
 

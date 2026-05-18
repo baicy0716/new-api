@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Link } from '@tanstack/react-router'
+import { Link, useRouterState } from '@tanstack/react-router'
 import { Menu } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -15,21 +15,57 @@ type TopNavProps = React.HTMLAttributes<HTMLElement> & {
   links: TopNavLink[]
 }
 
+const CONSOLE_ROUTE_PREFIXES = [
+  '/dashboard',
+  '/playground',
+  '/chat',
+  '/chat2link',
+  '/keys',
+  '/usage-logs',
+  '/wallet',
+  '/profile',
+  '/channels',
+  '/models',
+  '/users',
+  '/redemption-codes',
+  '/subscriptions',
+  '/system-settings',
+]
+
+function isLinkActive(pathname: string, href: string) {
+  if (href === '/') return pathname === '/'
+
+  if (href === '/dashboard') {
+    return CONSOLE_ROUTE_PREFIXES.some((prefix) =>
+      pathname === prefix || pathname.startsWith(`${prefix}/`)
+    )
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`)
+}
+
 /**
  * 顶部导航栏组件
  * 在大屏幕显示水平导航，在小屏幕显示下拉菜单
  */
 export function TopNav({ className, links, ...props }: TopNavProps) {
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  })
+
   // 规范化链接，确保所有可选属性都有默认值
   const normalizedLinks = useMemo(
     () =>
       links.map((link) => ({
-        isActive: false,
         disabled: false,
         external: false,
         ...link,
+        isActive:
+          link.external || !link.href
+            ? false
+            : isLinkActive(pathname, link.href),
       })),
-    [links]
+    [links, pathname]
   )
 
   return (
@@ -86,7 +122,10 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
               href={href}
               target='_blank'
               rel='noopener noreferrer'
-              className={`hover:text-primary text-sm font-medium transition-colors ${isActive ? '' : 'text-muted-foreground'}`}
+              className={cn(
+                'hover:text-primary text-sm font-medium transition-colors',
+                isActive ? 'text-foreground' : 'text-muted-foreground'
+              )}
             >
               {title}
             </a>
@@ -95,7 +134,10 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
               key={`${title}-${href}`}
               to={href}
               disabled={disabled}
-              className={`hover:text-primary text-sm font-medium transition-colors ${isActive ? '' : 'text-muted-foreground'}`}
+              className={cn(
+                'hover:text-primary text-sm font-medium transition-colors',
+                isActive ? 'text-foreground' : 'text-muted-foreground'
+              )}
             >
               {title}
             </Link>
