@@ -57,7 +57,7 @@ function NavLinkLabel({ link }: { link: TopNavLink }) {
       {link.showIndicatorDot ? (
         <span
           aria-hidden='true'
-          className='inline-block size-1.5 rounded-full bg-red-500'
+          className='kg-shell-link-dot inline-block size-1.5 rounded-full'
         />
       ) : null}
     </span>
@@ -163,7 +163,12 @@ export function PublicHeader(props: PublicHeaderProps) {
                     <ExternalHeaderLink
                       key={i}
                       link={link}
-                      className='kg-shell-link text-muted-foreground hover:text-foreground rounded-lg px-3 py-1.5 text-[13px] font-medium'
+                      className={cn(
+                        'kg-shell-link rounded-lg px-3 py-1.5 text-[13px] font-medium',
+                        link.showIndicatorDot
+                          ? 'kg-shell-link-highlight text-foreground'
+                          : 'text-muted-foreground hover:text-foreground'
+                      )}
                     >
                       <NavLinkLabel link={{ ...link, title: t(link.title) }} />
                     </ExternalHeaderLink>
@@ -175,6 +180,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                     to={link.href}
                     className={cn(
                       'kg-shell-link rounded-lg px-3 py-1.5 text-[13px] font-medium',
+                      link.showIndicatorDot && 'kg-shell-link-highlight',
                       isActive
                         ? 'kg-shell-link-active text-foreground'
                         : 'text-muted-foreground hover:text-foreground'
@@ -297,7 +303,8 @@ export function PublicHeader(props: PublicHeaderProps) {
             {links.map((link, i) => {
               const isActive = isPublicLinkActive(pathname, link.href)
               const linkClassName = cn(
-                'flex items-center gap-3 py-3 text-base font-medium tracking-tight',
+                'flex items-center gap-3 rounded-xl px-3 py-3 text-base font-medium tracking-tight',
+                link.showIndicatorDot && 'kg-shell-link-highlight',
                 isActive ? 'text-foreground' : 'text-muted-foreground'
               )
 

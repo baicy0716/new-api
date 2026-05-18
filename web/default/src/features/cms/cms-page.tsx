@@ -114,7 +114,7 @@ export function CmsPage({ path }: CmsPageProps) {
     <PublicLayout showMainContainer={false}>
       <>
         <main
-          className='kg-cms-scope min-h-screen pt-16 md:pt-20'
+          className='kg-cms-scope min-h-screen pt-24 md:pt-28'
           dangerouslySetInnerHTML={{ __html: data.html }}
         />
         {data.footerHtml ? (
