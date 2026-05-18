@@ -25,7 +25,60 @@
     @apply overflow-x-hidden font-sans;
   }
   body {
-    @apply bg-background text-foreground has-[div[data-variant='inset']]:bg-sidebar min-h-svh w-full font-sans;
+    @apply text-foreground has-[div[data-variant='inset']]:bg-sidebar min-h-svh w-full font-sans;
+    background:
+      radial-gradient(
+        ellipse 65% 50% at 25% 0%,
+        var(--kg-mesh-1) 0%,
+        transparent 55%
+      ),
+      radial-gradient(
+        ellipse 50% 35% at 95% 35%,
+        var(--kg-mesh-2) 0%,
+        transparent 55%
+      ),
+      radial-gradient(
+        ellipse 55% 40% at 5% 55%,
+        var(--kg-mesh-3) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 70% 45% at 50% 110%,
+        var(--kg-mesh-4) 0%,
+        transparent 60%
+      ),
+      linear-gradient(180deg, var(--kg-bg-1) 0%, var(--kg-bg-2) 100%);
+    background-attachment: fixed;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -2;
+    background-image:
+      linear-gradient(var(--kg-grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--kg-grid-line) 1px, transparent 1px);
+    background-size: 56px 56px;
+    transform: perspective(680px) rotateX(62deg);
+    transform-origin: center top;
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, transparent 80%);
+    -webkit-mask-image:
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, transparent 80%);
+    opacity: 0.55;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    opacity: var(--kg-noise-opacity);
+    mix-blend-mode: var(--kg-noise-blend);
   }
 
   /* Override Radix scroll locking for sticky headers */
