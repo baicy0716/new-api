@@ -17,6 +17,31 @@ import { defaultTopNavLinks } from '../config/top-nav.config'
 import type { TopNavLink } from '../types'
 import { HeaderLogo } from './header-logo'
 
+function ExternalHeaderLink({
+  link,
+  className,
+  children,
+  onClick,
+}: {
+  link: TopNavLink
+  className?: string
+  children: React.ReactNode
+  onClick?: () => void
+}) {
+  return (
+    <a
+      href={link.href}
+      target={link.openInNewTab ? '_blank' : undefined}
+      rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
+      className={className}
+      onClick={onClick}
+      aria-disabled={link.disabled}
+    >
+      {children}
+    </a>
+  )
+}
+
 export interface PublicHeaderProps {
   navLinks?: TopNavLink[]
   mobileLinks?: TopNavLink[]
@@ -127,15 +152,13 @@ export function PublicHeader(props: PublicHeaderProps) {
                 const isActive = pathname === link.href
                 if (link.external) {
                   return (
-                    <a
+                    <ExternalHeaderLink
                       key={i}
-                      href={link.href}
-                      target='_blank'
-                      rel='noopener noreferrer'
+                      link={link}
                       className='text-muted-foreground hover:text-foreground rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors duration-200'
                     >
                       {t(link.title)}
-                    </a>
+                    </ExternalHeaderLink>
                   )
                 }
                 return (
@@ -173,17 +196,27 @@ export function PublicHeader(props: PublicHeaderProps) {
                 <>
                   <div className='bg-border/40 mx-1 h-4 w-px' />
                   {loading ? (
-                    <Skeleton className='h-8 w-20 rounded-lg' />
+                    <Skeleton className='h-8 w-32 rounded-lg' />
                   ) : isAuthenticated ? (
                     <ProfileDropdown />
                   ) : (
-                    <Button
-                      size='sm'
-                      className='h-8 rounded-lg px-3.5 text-xs font-medium'
-                      asChild
-                    >
-                      <Link to='/sign-in'>{t('Sign in')}</Link>
-                    </Button>
+                    <div className='flex items-center gap-2'>
+                      <Button
+                        size='sm'
+                        variant='ghost'
+                        className='h-8 rounded-lg px-3.5 text-xs font-medium'
+                        asChild
+                      >
+                        <Link to='/sign-in'>{t('Sign in')}</Link>
+                      </Button>
+                      <Button
+                        size='sm'
+                        className='h-8 rounded-lg px-3.5 text-xs font-medium'
+                        asChild
+                      >
+                        <Link to='/sign-up'>{t('Sign up')}</Link>
+                      </Button>
+                    </div>
                   )}
                 </>
               )}
@@ -239,21 +272,35 @@ export function PublicHeader(props: PublicHeaderProps) {
           <nav className='flex flex-col gap-1'>
             {links.map((link, i) => {
               const isActive = pathname === link.href
+              const linkClassName = cn(
+                'flex items-center gap-3 py-3 text-base font-medium tracking-tight transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
+                mobileOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0',
+                isActive ? 'text-foreground' : 'text-muted-foreground'
+              )
+              const linkStyle = {
+                transitionDelay: mobileOpen ? `${100 + i * 50}ms` : '0ms',
+              }
+
+              if (link.external) {
+                return (
+                  <ExternalHeaderLink
+                    key={i}
+                    link={link}
+                    onClick={() => setMobileOpen(false)}
+                    className={linkClassName}
+                  >
+                    <span style={linkStyle}>{t(link.title)}</span>
+                  </ExternalHeaderLink>
+                )
+              }
+
               return (
                 <Link
                   key={i}
                   to={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className={cn(
-                    'flex items-center gap-3 py-3 text-base font-medium tracking-tight transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
-                    mobileOpen
-                      ? 'translate-y-0 opacity-100'
-                      : 'translate-y-4 opacity-0',
-                    isActive ? 'text-foreground' : 'text-muted-foreground'
-                  )}
-                  style={{
-                    transitionDelay: mobileOpen ? `${100 + i * 50}ms` : '0ms',
-                  }}
+                  className={linkClassName}
+                  style={linkStyle}
                 >
                   {t(link.title)}
                 </Link>
@@ -271,13 +318,32 @@ export function PublicHeader(props: PublicHeaderProps) {
             style={{ transitionDelay: mobileOpen ? '250ms' : '0ms' }}
           >
             {showAuthButtons && (
-              <Link
-                to={isAuthenticated ? '/dashboard' : '/sign-in'}
-                onClick={() => setMobileOpen(false)}
-                className='bg-foreground text-background inline-flex h-10 items-center justify-center rounded-lg text-sm font-medium transition-opacity hover:opacity-90 active:opacity-80'
-              >
-                {isAuthenticated ? t('Go to Dashboard') : t('Sign in')}
-              </Link>
+              isAuthenticated ? (
+                <Link
+                  to='/dashboard'
+                  onClick={() => setMobileOpen(false)}
+                  className='bg-foreground text-background inline-flex h-10 items-center justify-center rounded-lg text-sm font-medium transition-opacity hover:opacity-90 active:opacity-80'
+                >
+                  {t('Go to Dashboard')}
+                </Link>
+              ) : (
+                <div className='flex flex-col gap-3'>
+                  <Link
+                    to='/sign-in'
+                    onClick={() => setMobileOpen(false)}
+                    className='bg-foreground text-background inline-flex h-10 items-center justify-center rounded-lg text-sm font-medium transition-opacity hover:opacity-90 active:opacity-80'
+                  >
+                    {t('Sign in')}
+                  </Link>
+                  <Link
+                    to='/sign-up'
+                    onClick={() => setMobileOpen(false)}
+                    className='border-border text-foreground inline-flex h-10 items-center justify-center rounded-lg border text-sm font-medium transition-colors hover:bg-muted/50'
+                  >
+                    {t('Sign up')}
+                  </Link>
+                </div>
+              )
             )}
           </div>
         </div>

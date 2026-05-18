@@ -80,13 +80,20 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent side='bottom' align='start'>
             {normalizedLinks.map(
-              ({ title, href, isActive, disabled, external }) => (
+              ({
+                title,
+                href,
+                isActive,
+                disabled,
+                external,
+                openInNewTab,
+              }) => (
                 <DropdownMenuItem key={`${title}-${href}`} asChild>
                   {external ? (
                     <a
                       href={href}
-                      target='_blank'
-                      rel='noopener noreferrer'
+                      target={openInNewTab ? '_blank' : undefined}
+                      rel={openInNewTab ? 'noopener noreferrer' : undefined}
                       className={!isActive ? 'text-muted-foreground' : ''}
                     >
                       {title}
@@ -115,13 +122,14 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
         )}
         {...props}
       >
-        {normalizedLinks.map(({ title, href, isActive, disabled, external }) =>
+        {normalizedLinks.map(
+          ({ title, href, isActive, disabled, external, openInNewTab }) =>
           external ? (
             <a
               key={`${title}-${href}`}
               href={href}
-              target='_blank'
-              rel='noopener noreferrer'
+              target={openInNewTab ? '_blank' : undefined}
+              rel={openInNewTab ? 'noopener noreferrer' : undefined}
               className={cn(
                 'hover:text-primary text-sm font-medium transition-colors',
                 isActive ? 'text-foreground' : 'text-muted-foreground'

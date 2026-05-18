@@ -80,4 +80,5 @@ export type TopNavLink = {
   isActive?: boolean
   disabled?: boolean
   external?: boolean
+  openInNewTab?: boolean
 }
