@@ -40,6 +40,7 @@ function scopeCmsStyles(styles: string) {
 
 export function CmsPage({ path }: CmsPageProps) {
   const { t } = useTranslation()
+  const isHomePage = path === '/share/' || path === '/share'
   const { data, isLoading, isError } = useQuery({
     queryKey: ['cms-page', path],
     queryFn: () => getCmsPage(path),
@@ -114,7 +115,11 @@ export function CmsPage({ path }: CmsPageProps) {
     <PublicLayout showMainContainer={false}>
       <>
         <main
-          className='kg-cms-scope min-h-screen pt-24 md:pt-28'
+          className={
+            isHomePage
+              ? 'kg-cms-scope kg-cms-home min-h-screen'
+              : 'kg-cms-scope kg-cms-page min-h-screen'
+          }
           dangerouslySetInnerHTML={{ __html: data.html }}
         />
         {data.footerHtml ? (

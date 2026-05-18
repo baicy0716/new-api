@@ -8,7 +8,7 @@ type AuthLayoutProps = {
 export function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <PublicLayout showMainContainer={false} showNotifications={false}>
-      <div className='flex min-h-svh flex-col pt-20 md:pt-24'>
+      <div className='flex min-h-[calc(100svh-4rem)] flex-col'>
         <main className='flex flex-1 items-center px-4 py-8 md:px-6 md:py-12'>
           <div className='mx-auto w-full max-w-7xl'>
             <div className='mx-auto w-full max-w-[480px]'>

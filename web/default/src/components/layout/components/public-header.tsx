@@ -78,6 +78,7 @@ export interface PublicHeaderProps {
   showNavigation?: boolean
   showAuthButtons?: boolean
   showNotifications?: boolean
+  variant?: 'floating' | 'cms'
   className?: string
 }
 
@@ -91,6 +92,7 @@ export function PublicHeader(props: PublicHeaderProps) {
     homeUrl = '/share/',
     showAuthButtons = true,
     showNotifications = true,
+    variant = 'floating',
   } = props
 
   const { t } = useTranslation()
@@ -111,6 +113,7 @@ export function PublicHeader(props: PublicHeaderProps) {
   const isAuthenticated = !!user
   const displaySiteName = customSiteName || systemName
   const links = dynamicLinks.length > 0 ? dynamicLinks : navLinks
+  const isCmsVariant = variant === 'cms'
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : ''
@@ -121,14 +124,28 @@ export function PublicHeader(props: PublicHeaderProps) {
 
   return (
     <>
-      <header className='pointer-events-none fixed inset-x-0 top-0 z-50'>
+      <header
+        className={cn(
+          isCmsVariant
+            ? 'kg-shell-cms-header sticky top-0 z-50'
+            : 'pointer-events-none fixed inset-x-0 top-0 z-50',
+          props.className
+        )}
+      >
         <div
           className={cn(
-            'pointer-events-auto mx-auto max-w-7xl px-4 pt-3 md:px-6'
+            isCmsVariant
+              ? 'kg-shell-cms-header-inner pointer-events-auto'
+              : 'pointer-events-auto mx-auto max-w-7xl px-4 pt-3 md:px-6'
           )}
         >
           <nav
-            className='bg-background/88 ring-border/60 flex h-14 items-center justify-between rounded-2xl px-4 shadow-sm ring-[0.5px] backdrop-blur-xl'
+            className={cn(
+              'flex items-center justify-between',
+              isCmsVariant
+                ? 'kg-shell-cms-nav h-16'
+                : 'bg-background/88 ring-border/60 h-14 rounded-2xl px-4 shadow-sm ring-[0.5px] backdrop-blur-xl'
+            )}
           >
             {/* Logo */}
             <Link

@@ -25,11 +25,12 @@ export function PublicLayout(props: PublicLayoutProps) {
         showNotifications={props.showNotifications}
         logo={props.logo}
         siteName={props.siteName}
+        variant='cms'
         {...props.headerProps}
       />
 
       {props.showMainContainer !== false ? (
-        <main className='container px-4 py-6 pt-20 md:px-4'>
+        <main className='container px-4 py-6 md:px-4'>
           {props.children}
         </main>
       ) : (
