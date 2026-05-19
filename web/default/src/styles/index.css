@@ -23,6 +23,9 @@
   }
   html {
     @apply overflow-x-hidden font-sans;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   body {
     @apply text-foreground has-[div[data-variant='inset']]:bg-sidebar min-h-svh w-full font-sans;
@@ -112,14 +115,34 @@
   }
 
   .kg-shell-cms-nav {
-    background: rgba(255, 255, 255, 0.68);
-    border: 1px solid rgba(255, 255, 255, 0.42);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.12) 100%),
+      rgba(12, 18, 30, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow:
-      0 22px 44px -32px rgba(15, 23, 42, 0.36),
-      0 8px 18px -16px rgba(15, 23, 42, 0.18),
-      inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(22px) saturate(180%);
-    -webkit-backdrop-filter: blur(22px) saturate(180%);
+      0 20px 40px -28px rgba(2, 6, 23, 0.62),
+      0 10px 24px -20px rgba(15, 23, 42, 0.26),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+  }
+
+  .kg-shell-cms-nav::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 50%;
+    border-radius: inherit;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.18) 0%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+    pointer-events: none;
+    z-index: -1;
   }
 
   .kg-shell-brand {
@@ -133,9 +156,10 @@
   }
 
   .kg-shell-brand-text {
-    color: var(--kg-ink, rgb(10, 15, 31));
-    font-size: 16px;
-    font-weight: 600;
+    color: rgb(241, 245, 249);
+    font-size: 15px;
+    font-weight: 550;
+    letter-spacing: 0.01em;
   }
 
   .kg-shell-toolbar {
@@ -146,12 +170,14 @@
   }
 
   .dark .kg-shell-cms-nav {
-    background: rgba(255, 255, 255, 0.16);
-    border-color: rgba(255, 255, 255, 0.18);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%),
+      rgba(10, 15, 26, 0.68);
+    border-color: rgba(255, 255, 255, 0.12);
     box-shadow:
-      0 22px 46px -32px rgba(2, 6, 23, 0.7),
-      0 8px 20px -16px rgba(2, 6, 23, 0.34),
-      inset 0 1px 0 rgba(255, 255, 255, 0.22);
+      0 24px 48px -30px rgba(2, 6, 23, 0.72),
+      0 12px 24px -22px rgba(2, 6, 23, 0.42),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
     color: rgb(241, 245, 249);
   }
 
@@ -175,37 +201,36 @@
 
   .kg-shell-links {
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
     padding-inline: 20px;
   }
 
   .kg-shell-link {
     position: relative;
     border: 1px solid transparent;
-    letter-spacing: 0;
+    letter-spacing: 0.01em;
+    text-rendering: geometricPrecision;
     transition:
       color 180ms ease,
       background-color 180ms ease,
       box-shadow 180ms ease,
       border-color 180ms ease,
-      opacity 180ms ease,
-      transform 180ms ease;
+      opacity 180ms ease;
   }
 
   .kg-shell-link:hover {
-    transform: translateY(-1px);
-    background: rgba(255, 255, 255, 0.7);
-    border-color: rgba(203, 213, 225, 0.72);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.08);
   }
 
   .kg-shell-link-active {
-    background: rgba(255, 255, 255, 0.96);
-    border-color: rgba(203, 213, 225, 0.88);
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.14);
     box-shadow:
-      0 12px 28px -22px rgba(15, 23, 42, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.92);
+      0 14px 28px -24px rgba(2, 6, 23, 0.44),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
     font-weight: 550;
-    color: rgb(15, 23, 42) !important;
+    color: rgb(255, 255, 255) !important;
   }
 
   .kg-shell-more-trigger {
@@ -214,13 +239,13 @@
   }
 
   .kg-shell-more-menu {
-    border: 1px solid rgba(226, 232, 240, 0.95);
-    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(12, 18, 30, 0.84);
     box-shadow:
-      0 24px 40px -28px rgba(15, 23, 42, 0.3),
-      0 10px 20px -20px rgba(15, 23, 42, 0.16);
-    backdrop-filter: blur(18px) saturate(180%);
-    -webkit-backdrop-filter: blur(18px) saturate(180%);
+      0 28px 40px -28px rgba(2, 6, 23, 0.78),
+      0 12px 22px -22px rgba(2, 6, 23, 0.46);
+    backdrop-filter: blur(22px) saturate(180%);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
   }
 
   .kg-shell-more-item {
@@ -233,33 +258,33 @@
 
   .kg-shell-more-item[data-highlighted],
   .kg-shell-more-item:hover {
-    background: rgba(248, 250, 252, 0.96) !important;
-    border-color: rgba(226, 232, 240, 0.9);
-    color: rgb(15, 23, 42) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgb(255, 255, 255) !important;
   }
 
   .kg-shell-more-item-active {
-    background: rgba(248, 250, 252, 0.96);
-    border-color: rgba(226, 232, 240, 0.92);
-    color: rgb(15, 23, 42) !important;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: rgb(255, 255, 255) !important;
   }
 
   .kg-shell-more-highlight {
-    color: rgb(153, 27, 27) !important;
+    color: rgb(254, 226, 226) !important;
   }
 
   .dark .kg-shell-link-active {
-    background: rgba(255, 255, 255, 0.22);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.14);
     box-shadow:
       0 14px 28px -24px rgba(15, 23, 42, 0.56),
-      inset 0 1px 0 rgba(255, 255, 255, 0.18);
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
     color: rgb(255, 255, 255) !important;
   }
 
   .dark .kg-shell-link:hover {
-    background: rgba(255, 255, 255, 0.14);
-    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 
   .kg-shell-link-highlight {
@@ -296,11 +321,11 @@
   }
 
   .dark .kg-shell-more-menu {
-    border-color: rgba(255, 255, 255, 0.18);
-    background: rgba(15, 23, 42, 0.76);
+    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(10, 15, 26, 0.86);
     box-shadow:
-      0 26px 42px -30px rgba(2, 6, 23, 0.82),
-      0 12px 24px -22px rgba(2, 6, 23, 0.48);
+      0 28px 42px -30px rgba(2, 6, 23, 0.84),
+      0 12px 24px -22px rgba(2, 6, 23, 0.54);
     backdrop-filter: blur(20px) saturate(170%);
     -webkit-backdrop-filter: blur(20px) saturate(170%);
   }
@@ -441,43 +466,30 @@
   }
 
   .kg-cms-home .home-logos {
-    max-width: 1280px;
-    margin: 28px auto 0;
+    max-width: 1180px;
+    margin: 34px auto 56px;
     padding: 0 clamp(20px, 4vw, 40px);
+    text-align: center;
   }
 
   .kg-cms-home .home-logos-label {
-    margin-bottom: 12px;
+    margin-bottom: 20px;
     color: var(--kg-ink-4, #6b7280);
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 600;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
   }
 
   .kg-cms-home .home-logos-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 14px 26px;
-    color: var(--kg-ink-3, #4b5563);
-    font-size: 14px;
-    font-weight: 500;
-  }
-
-  .kg-cms-home .home-logos-in-hero {
-    margin-top: -32px !important;
-    margin-bottom: 0 !important;
-    padding-inline: 0 !important;
-  }
-
-  .kg-cms-home .home-logos-in-hero .home-logos-label {
-    margin-bottom: 6px !important;
-  }
-
-  .kg-cms-home .home-logos-in-hero .home-logos-label,
-  .kg-cms-home .home-logos-in-hero .home-logos-row {
-    text-align: center;
     justify-content: center;
+    gap: 18px 52px;
+    color: var(--kg-ink-3, #4b5563);
+    font-size: clamp(15px, 1.5vw, 17px);
+    font-weight: 500;
+    letter-spacing: -0.01em;
   }
 
   .kg-cms-playground .page-hero-band {

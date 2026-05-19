@@ -46,17 +46,6 @@ function enhanceCmsHtml(html: string, path: string) {
   const doc = new DOMParser().parseFromString(html, 'text/html')
   const isHomePage = path === '/share/' || path === '/share'
 
-  if (isHomePage) {
-    const hero = doc.querySelector('.home-hero')
-    const cta = doc.querySelector('.home-cta')
-    const logos = doc.querySelector('.home-logos')
-
-    if (hero && cta && logos && logos.parentElement !== hero) {
-      cta.insertAdjacentElement('afterend', logos)
-      logos.classList.add('home-logos-in-hero')
-    }
-  }
-
   if (!isHomePage) {
     const hero = doc.querySelector('.page-hero-band')
     const divider = doc.querySelector('.page-hero-divider')
