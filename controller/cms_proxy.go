@@ -20,7 +20,6 @@ const (
 )
 
 var (
-	cmsMainPattern = regexp.MustCompile(`(?is)<main[^>]*>(.*?)</main>`)
 	cmsBodyPattern = regexp.MustCompile(`(?is)<body[^>]*>(.*?)</body>`)
 	cmsFooterPattern = regexp.MustCompile(`(?is)<footer[^>]*>.*?</footer>`)
 	cmsTitlePattern = regexp.MustCompile(`(?is)<title>(.*?)</title>`)
@@ -116,6 +115,25 @@ func extractFirstMatch(pattern *regexp.Regexp, content string) string {
 		return ""
 	}
 	return strings.TrimSpace(match[1])
+}
+
+func extractMainContent(content string) string {
+	start := strings.Index(strings.ToLower(content), "<main")
+	if start < 0 {
+		return ""
+	}
+
+	openEnd := strings.Index(content[start:], ">")
+	if openEnd < 0 {
+		return ""
+	}
+	contentStart := start + openEnd + 1
+	end := strings.LastIndex(strings.ToLower(content), "</main>")
+	if end < contentStart {
+		return ""
+	}
+
+	return strings.TrimSpace(content[contentStart:end])
 }
 
 func extractStylesheets(content string) []string {
@@ -222,11 +240,12 @@ func GetCMSPage(c *gin.Context) {
 	}
 
 	rawHTML := rewriteCMSMarkup(string(body))
-	mainHTML := extractFirstMatch(cmsMainPattern, rawHTML)
+	mainHTML := extractMainContent(rawHTML)
 	if mainHTML == "" {
 		mainHTML = extractFirstMatch(cmsBodyPattern, rawHTML)
 	}
 	mainHTML = cmsScriptPattern.ReplaceAllString(mainHTML, "")
+	mainHTML = cmsStylePattern.ReplaceAllString(mainHTML, "")
 	styles := rewriteCMSMarkup(extractInlineStyles(rawHTML))
 
 	payload := cmsPagePayload{
