@@ -18,6 +18,11 @@ interface NotificationState {
   isNoticeClosed: () => boolean
 }
 
+type NotificationPersistedState = Pick<
+  NotificationState,
+  'lastReadNotice' | 'readAnnouncementKeys' | 'closedUntilDate'
+>
+
 /**
  * Notification store for tracking read status of Notice and Announcements
  * Persists to localStorage to maintain state across sessions
@@ -61,7 +66,7 @@ export const useNotificationStore = create<NotificationState>()(
     }),
     {
       name: 'notification-storage',
-      storage: createSafePersistStorage<NotificationState>(),
+      storage: createSafePersistStorage<NotificationPersistedState>(),
       partialize: (state) => ({
         lastReadNotice: state.lastReadNotice,
         readAnnouncementKeys: state.readAnnouncementKeys,

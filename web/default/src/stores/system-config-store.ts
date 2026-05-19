@@ -47,6 +47,11 @@ interface SystemConfigState {
   setLoading: (loading: boolean) => void
 }
 
+type SystemConfigPersistedState = Pick<
+  SystemConfigState,
+  'config' | 'loadedLogoUrl'
+>
+
 /**
  * System configuration store with automatic persistence
  * Manages system name, logo, footer HTML and loading states
@@ -77,7 +82,7 @@ export const useSystemConfigStore = create<SystemConfigState>()(
     }),
     {
       name: 'system-config-storage',
-      storage: createSafePersistStorage<SystemConfigState>(),
+      storage: createSafePersistStorage<SystemConfigPersistedState>(),
       partialize: (state) => ({
         config: state.config,
         loadedLogoUrl: state.loadedLogoUrl,
