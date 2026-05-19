@@ -6,6 +6,15 @@ export interface CmsPagePayload {
   footerHtml: string
   styles: string
   stylesheets: string[]
+  scripts?: CmsScriptPayload[]
+}
+
+export interface CmsScriptPayload {
+  src?: string
+  content?: string
+  type?: string
+  async?: boolean
+  defer?: boolean
 }
 
 export interface CmsPageResponse {

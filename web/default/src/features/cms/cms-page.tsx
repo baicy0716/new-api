@@ -47,7 +47,7 @@ function enhanceCmsHtml(html: string, path: string) {
   const isHomePage = path === '/share/' || path === '/share'
 
   if (!isHomePage) {
-    const hero = doc.querySelector('.page-hero-band')
+    const hero = doc.querySelector('.page-hero-band, .hero')
     const divider = doc.querySelector('.page-hero-divider')
 
     if (hero && !divider) {
@@ -56,6 +56,29 @@ function enhanceCmsHtml(html: string, path: string) {
   }
 
   return doc.body.innerHTML
+}
+
+function loadExternalScript(src: string, type?: string) {
+  return new Promise<HTMLScriptElement>((resolve, reject) => {
+    const existing = document.querySelector<HTMLScriptElement>(
+      `script[data-kuaigou-cms-src="${CSS.escape(src)}"]`
+    )
+    if (existing) {
+      resolve(existing)
+      return
+    }
+
+    const scriptEl = document.createElement('script')
+    scriptEl.src = src
+    scriptEl.async = false
+    if (type) {
+      scriptEl.type = type
+    }
+    scriptEl.setAttribute('data-kuaigou-cms-src', src)
+    scriptEl.onload = () => resolve(scriptEl)
+    scriptEl.onerror = () => reject(new Error(`Failed to load CMS script: ${src}`))
+    document.body.appendChild(scriptEl)
+  })
 }
 
 export function CmsPage({ path }: CmsPageProps) {
@@ -89,6 +112,50 @@ export function CmsPage({ path }: CmsPageProps) {
       document.head.appendChild(linkEl)
       return linkEl
     })
+    const scriptEls: HTMLScriptElement[] = []
+    let cancelled = false
+
+    const bootCmsScripts = async () => {
+      const scripts = data.scripts ?? []
+      const inlineScripts = scripts.filter((script) => !script.src && script.content)
+      const externalScripts = scripts.filter((script) => script.src)
+      const hadAlpine = Boolean(
+        (window as typeof window & { Alpine?: unknown }).Alpine
+      )
+
+      inlineScripts.forEach((script) => {
+        if (cancelled || !script.content) return
+        const scriptEl = document.createElement('script')
+        if (script.type) {
+          scriptEl.type = script.type
+        }
+        scriptEl.text = script.content
+        scriptEl.setAttribute('data-kuaigou-cms', path)
+        document.body.appendChild(scriptEl)
+        scriptEls.push(scriptEl)
+      })
+
+      for (const script of externalScripts) {
+        if (cancelled || !script.src) continue
+        const scriptEl = await loadExternalScript(script.src, script.type)
+        scriptEl.setAttribute('data-kuaigou-cms', path)
+        scriptEls.push(scriptEl)
+      }
+
+      const alpine = (
+        window as typeof window & {
+          Alpine?: { initTree?: (el: Element) => void }
+        }
+      ).Alpine
+      const main = document.querySelector('.kg-cms-scope')
+      if (!cancelled && hadAlpine && alpine?.initTree && main) {
+        alpine.initTree(main)
+      }
+    }
+
+    void bootCmsScripts().catch((error) => {
+      console.error('Failed to bootstrap CMS scripts', error)
+    })
 
     if (data.title) {
       document.title = data.title
@@ -98,10 +165,16 @@ export function CmsPage({ path }: CmsPageProps) {
     }
 
     return () => {
+      cancelled = true
       document.title = previousTitle
       upsertMetaDescription(previousDescription)
       styleEl.remove()
       linkEls.forEach((linkEl) => linkEl.remove())
+      scriptEls.forEach((scriptEl) => {
+        if (!scriptEl.src || !scriptEl.dataset.kuaigouCmsSrc) {
+          scriptEl.remove()
+        }
+      })
     }
   }, [data, path])
 
@@ -140,7 +213,7 @@ export function CmsPage({ path }: CmsPageProps) {
             isHomePage
               ? 'kg-cms-scope kg-cms-home min-h-screen'
               : `kg-cms-scope kg-cms-page min-h-screen ${
-                  path === '/share/playground' ? 'kg-cms-playground' : ''
+                  path.startsWith('/share/playground') ? 'kg-cms-playground' : ''
                 }`
           }
           dangerouslySetInnerHTML={{ __html: enhancedHtml }}

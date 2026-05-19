@@ -25,8 +25,12 @@ var (
 	cmsTitlePattern = regexp.MustCompile(`(?is)<title>(.*?)</title>`)
 	cmsDescPattern = regexp.MustCompile(`(?is)<meta[^>]+name=["']description["'][^>]+content=["'](.*?)["'][^>]*>`)
 	cmsStylePattern = regexp.MustCompile(`(?is)<style[^>]*>(.*?)</style>`)
-	cmsScriptPattern = regexp.MustCompile(`(?is)<script[^>]*>.*?</script>`)
+	cmsScriptPattern = regexp.MustCompile(`(?is)<script([^>]*)>(.*?)</script>`)
 	cmsStylesheetPattern = regexp.MustCompile(`(?is)<link[^>]*href=["']([^"']+)["'][^>]*rel=["']stylesheet["'][^>]*>|<link[^>]*rel=["']stylesheet["'][^>]*href=["']([^"']+)["'][^>]*>`)
+	cmsScriptSrcPattern = regexp.MustCompile(`(?is)\bsrc=["']([^"']+)["']`)
+	cmsScriptTypePattern = regexp.MustCompile(`(?is)\btype=["']([^"']+)["']`)
+	cmsScriptAsyncPattern = regexp.MustCompile(`(?i)(^|\s)async(\s|=|$)`)
+	cmsScriptDeferPattern = regexp.MustCompile(`(?i)(^|\s)defer(\s|=|$)`)
 )
 
 var cmsAllowedPrefixes = []string{
@@ -51,6 +55,15 @@ type cmsPagePayload struct {
 	FooterHTML  string   `json:"footerHtml"`
 	Styles      string   `json:"styles"`
 	Stylesheets []string `json:"stylesheets"`
+	Scripts     []cmsScriptPayload `json:"scripts"`
+}
+
+type cmsScriptPayload struct {
+	Src     string `json:"src,omitempty"`
+	Content string `json:"content,omitempty"`
+	Type    string `json:"type,omitempty"`
+	Async   bool   `json:"async,omitempty"`
+	Defer   bool   `json:"defer,omitempty"`
 }
 
 func normalizeCMSPath(raw string) (string, error) {
@@ -187,6 +200,46 @@ func extractInlineStyles(content string) string {
 	return strings.Join(parts, "\n\n")
 }
 
+func extractCMSAttribute(pattern *regexp.Regexp, attrs string) string {
+	match := pattern.FindStringSubmatch(attrs)
+	if len(match) < 2 {
+		return ""
+	}
+	return strings.TrimSpace(match[1])
+}
+
+func extractScripts(content string) []cmsScriptPayload {
+	matches := cmsScriptPattern.FindAllStringSubmatch(content, -1)
+	if len(matches) == 0 {
+		return nil
+	}
+
+	scripts := make([]cmsScriptPayload, 0, len(matches))
+	for _, match := range matches {
+		if len(match) < 3 {
+			continue
+		}
+		attrs := match[1]
+		body := strings.TrimSpace(match[2])
+		src := extractCMSAttribute(cmsScriptSrcPattern, attrs)
+		scriptType := extractCMSAttribute(cmsScriptTypePattern, attrs)
+
+		if src == "" && body == "" {
+			continue
+		}
+
+		scripts = append(scripts, cmsScriptPayload{
+			Src:     rewriteCMSMarkup(src),
+			Content: rewriteCMSMarkup(body),
+			Type:    scriptType,
+			Async:   cmsScriptAsyncPattern.MatchString(attrs),
+			Defer:   cmsScriptDeferPattern.MatchString(attrs),
+		})
+	}
+
+	return scripts
+}
+
 func GetCMSPage(c *gin.Context) {
 	cmsPath, err := normalizeCMSPath(c.Query("path"))
 	if err != nil || !isAllowedCMSPath(cmsPath) {
@@ -256,6 +309,7 @@ func GetCMSPage(c *gin.Context) {
 		FooterHTML:  strings.TrimSpace(cmsFooterPattern.FindString(rawHTML)),
 		Styles:      strings.TrimSpace(styles),
 		Stylesheets: extractStylesheets(rawHTML),
+		Scripts:     extractScripts(rawHTML),
 	}
 
 	if payload.HTML == "" {
