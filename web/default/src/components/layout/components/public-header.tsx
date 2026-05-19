@@ -126,16 +126,14 @@ export function PublicHeader(props: PublicHeaderProps) {
     <>
       <header
         className={cn(
-          isCmsVariant
-            ? 'kg-shell-cms-header fixed inset-x-0 top-0 z-50'
-            : 'pointer-events-none fixed inset-x-0 top-0 z-50',
+          'pointer-events-none fixed inset-x-0 top-0 z-50',
           props.className
         )}
       >
         <div
           className={cn(
             isCmsVariant
-              ? 'kg-shell-cms-header-inner pointer-events-auto'
+              ? 'kg-shell-cms-header-inner pointer-events-auto mx-auto max-w-7xl px-4 pt-3 md:px-6'
               : 'pointer-events-auto mx-auto max-w-7xl px-4 pt-3 md:px-6'
           )}
         >
@@ -143,7 +141,7 @@ export function PublicHeader(props: PublicHeaderProps) {
             className={cn(
               'flex items-center justify-between',
               isCmsVariant
-                ? 'kg-shell-cms-nav h-16'
+                ? 'kg-shell-cms-nav h-14 rounded-[26px] px-4'
                 : 'bg-background/88 ring-border/60 h-14 rounded-2xl px-4 shadow-sm ring-[0.5px] backdrop-blur-xl'
             )}
           >

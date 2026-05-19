@@ -16,7 +16,7 @@ type PublicLayoutProps = {
 
 export function PublicLayout(props: PublicLayoutProps) {
   return (
-    <div className='text-foreground relative min-h-svh overflow-hidden pt-16'>
+    <div className='text-foreground relative min-h-svh overflow-hidden pt-[4.5rem] md:pt-[4.75rem]'>
       <PublicHeader
         navContent={props.navContent}
         navLinks={props.navLinks}
