@@ -7,6 +7,55 @@ type ResolvedTheme = Exclude<Theme, 'system'>
 const DEFAULT_THEME = 'system'
 const THEME_COOKIE_NAME = 'vite-ui-theme'
 const THEME_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 // 1 year
+const CMS_THEME_STORAGE_KEY = 'kg-theme'
+
+function isTheme(value: string | null | undefined): value is Theme {
+  return value === 'dark' || value === 'light' || value === 'system'
+}
+
+function getStoredTheme(storageKey: string, defaultTheme: Theme): Theme {
+  const cookieTheme = getCookie(storageKey)
+  if (isTheme(cookieTheme)) {
+    return cookieTheme
+  }
+
+  if (typeof window === 'undefined') {
+    return defaultTheme
+  }
+
+  try {
+    const localTheme = window.localStorage.getItem(storageKey)
+    if (isTheme(localTheme)) {
+      return localTheme
+    }
+
+    const legacyCmsTheme = window.localStorage.getItem(CMS_THEME_STORAGE_KEY)
+    if (legacyCmsTheme === 'dark' || legacyCmsTheme === 'light') {
+      return legacyCmsTheme
+    }
+  } catch {
+    return defaultTheme
+  }
+
+  return defaultTheme
+}
+
+function syncThemeStorage(storageKey: string, theme: Theme): void {
+  if (typeof window === 'undefined') return
+
+  try {
+    window.localStorage.setItem(storageKey, theme)
+
+    if (theme === 'system') {
+      window.localStorage.removeItem(CMS_THEME_STORAGE_KEY)
+      return
+    }
+
+    window.localStorage.setItem(CMS_THEME_STORAGE_KEY, theme)
+  } catch {
+    // Ignore storage write failures and keep the DOM theme authoritative.
+  }
+}
 
 type ThemeProviderProps = {
   children: React.ReactNode
@@ -38,8 +87,8 @@ export function ThemeProvider({
   storageKey = THEME_COOKIE_NAME,
   ...props
 }: ThemeProviderProps) {
-  const [theme, _setTheme] = useState<Theme>(
-    () => (getCookie(storageKey) as Theme) || defaultTheme
+  const [theme, _setTheme] = useState<Theme>(() =>
+    getStoredTheme(storageKey, defaultTheme)
   )
 
   // Optimized: Memoize the resolved theme calculation to prevent unnecessary re-computations
@@ -70,19 +119,22 @@ export function ThemeProvider({
     }
 
     applyTheme(resolvedTheme)
+    syncThemeStorage(storageKey, theme)
 
     mediaQuery.addEventListener('change', handleChange)
 
     return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [theme, resolvedTheme])
+  }, [storageKey, theme, resolvedTheme])
 
   const setTheme = (theme: Theme) => {
     setCookie(storageKey, theme, THEME_COOKIE_MAX_AGE)
+    syncThemeStorage(storageKey, theme)
     _setTheme(theme)
   }
 
   const resetTheme = () => {
     removeCookie(storageKey)
+    syncThemeStorage(storageKey, DEFAULT_THEME)
     _setTheme(DEFAULT_THEME)
   }
 
