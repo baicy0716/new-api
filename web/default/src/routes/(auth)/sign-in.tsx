@@ -1,6 +1,5 @@
 import { z } from 'zod'
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { DEFAULT_AUTH_REDIRECT, normalizeInternalRedirect } from '@/lib/navigation'
 import { useAuthStore } from '@/stores/auth-store'
 import {
   DEFAULT_AUTH_REDIRECT,

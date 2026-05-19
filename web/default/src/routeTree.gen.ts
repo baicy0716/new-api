@@ -14,9 +14,17 @@ import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as authRouteRouteImport } from './routes/(auth)/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ToolsIndexRouteImport } from './routes/tools/index'
+import { Route as ShareIndexRouteImport } from './routes/share/index'
+import { Route as ShareCenterIndexRouteImport } from './routes/share-center/index'
 import { Route as SetupIndexRouteImport } from './routes/setup/index'
 import { Route as PricingIndexRouteImport } from './routes/pricing/index'
+import { Route as MarketplaceIndexRouteImport } from './routes/marketplace/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
+import { Route as ShareRegisterRouteImport } from './routes/share/register'
+import { Route as ShareLoginRouteImport } from './routes/share/login'
+import { Route as ShareConsoleRouteImport } from './routes/share/console'
+import { Route as ShareSectionRouteImport } from './routes/share/$section'
 import { Route as OauthProviderRouteImport } from './routes/oauth/$provider'
 import { Route as AuthenticatedChat2linkRouteImport } from './routes/_authenticated/chat2link'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
@@ -44,6 +52,7 @@ import { Route as AuthenticatedModelsIndexRouteImport } from './routes/_authenti
 import { Route as AuthenticatedKeysIndexRouteImport } from './routes/_authenticated/keys/index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 import { Route as AuthenticatedChannelsIndexRouteImport } from './routes/_authenticated/channels/index'
+import { Route as ShareSectionSlugRouteImport } from './routes/share/$section/$slug'
 import { Route as AuthenticatedUsageLogsSectionRouteImport } from './routes/_authenticated/usage-logs/$section'
 import { Route as AuthenticatedModelsSectionRouteImport } from './routes/_authenticated/models/$section'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
@@ -57,6 +66,7 @@ import { Route as AuthenticatedSystemSettingsIntegrationsIndexRouteImport } from
 import { Route as AuthenticatedSystemSettingsGeneralIndexRouteImport } from './routes/_authenticated/system-settings/general/index'
 import { Route as AuthenticatedSystemSettingsContentIndexRouteImport } from './routes/_authenticated/system-settings/content/index'
 import { Route as AuthenticatedSystemSettingsAuthIndexRouteImport } from './routes/_authenticated/system-settings/auth/index'
+import { Route as ShareSectionSlugChildRouteImport } from './routes/share/$section/$slug/$child'
 import { Route as AuthenticatedSystemSettingsRequestLimitsSectionRouteImport } from './routes/_authenticated/system-settings/request-limits/$section'
 import { Route as AuthenticatedSystemSettingsModelsSectionRouteImport } from './routes/_authenticated/system-settings/models/$section'
 import { Route as AuthenticatedSystemSettingsMaintenanceSectionRouteImport } from './routes/_authenticated/system-settings/maintenance/$section'
@@ -88,6 +98,21 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ToolsIndexRoute = ToolsIndexRouteImport.update({
+  id: '/tools/',
+  path: '/tools/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShareIndexRoute = ShareIndexRouteImport.update({
+  id: '/share/',
+  path: '/share/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShareCenterIndexRoute = ShareCenterIndexRouteImport.update({
+  id: '/share-center/',
+  path: '/share-center/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SetupIndexRoute = SetupIndexRouteImport.update({
   id: '/setup/',
   path: '/setup/',
@@ -98,9 +123,34 @@ const PricingIndexRoute = PricingIndexRouteImport.update({
   path: '/pricing/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
+  id: '/marketplace/',
+  path: '/marketplace/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutIndexRoute = AboutIndexRouteImport.update({
   id: '/about/',
   path: '/about/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShareRegisterRoute = ShareRegisterRouteImport.update({
+  id: '/share/register',
+  path: '/share/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShareLoginRoute = ShareLoginRouteImport.update({
+  id: '/share/login',
+  path: '/share/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShareConsoleRoute = ShareConsoleRouteImport.update({
+  id: '/share/console',
+  path: '/share/console',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShareSectionRoute = ShareSectionRouteImport.update({
+  id: '/share/$section',
+  path: '/share/$section',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OauthProviderRoute = OauthProviderRouteImport.update({
@@ -249,6 +299,11 @@ const AuthenticatedChannelsIndexRoute =
     path: '/channels/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ShareSectionSlugRoute = ShareSectionSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ShareSectionRoute,
+} as any)
 const AuthenticatedUsageLogsSectionRoute =
   AuthenticatedUsageLogsSectionRouteImport.update({
     id: '/usage-logs/$section',
@@ -325,6 +380,11 @@ const AuthenticatedSystemSettingsAuthIndexRoute =
     path: '/auth/',
     getParentRoute: () => AuthenticatedSystemSettingsRouteRoute,
   } as any)
+const ShareSectionSlugChildRoute = ShareSectionSlugChildRouteImport.update({
+  id: '/$child',
+  path: '/$child',
+  getParentRoute: () => ShareSectionSlugRoute,
+} as any)
 const AuthenticatedSystemSettingsRequestLimitsSectionRoute =
   AuthenticatedSystemSettingsRequestLimitsSectionRouteImport.update({
     id: '/request-limits/$section',
@@ -386,15 +446,24 @@ export interface FileRoutesByFullPath {
   '/503': typeof errors503Route
   '/chat2link': typeof AuthenticatedChat2linkRoute
   '/oauth/$provider': typeof OauthProviderRoute
+  '/share/$section': typeof ShareSectionRouteWithChildren
+  '/share/console': typeof ShareConsoleRoute
+  '/share/login': typeof ShareLoginRoute
+  '/share/register': typeof ShareRegisterRoute
   '/about/': typeof AboutIndexRoute
+  '/marketplace/': typeof MarketplaceIndexRoute
   '/pricing/': typeof PricingIndexRoute
   '/setup/': typeof SetupIndexRoute
+  '/share-center/': typeof ShareCenterIndexRoute
+  '/share/': typeof ShareIndexRoute
+  '/tools/': typeof ToolsIndexRoute
   '/user/reset': typeof authUserResetRoute
   '/chat/$chatId': typeof AuthenticatedChatChatIdRoute
   '/dashboard/$section': typeof AuthenticatedDashboardSectionRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/models/$section': typeof AuthenticatedModelsSectionRoute
   '/usage-logs/$section': typeof AuthenticatedUsageLogsSectionRoute
+  '/share/$section/$slug': typeof ShareSectionSlugRouteWithChildren
   '/channels/': typeof AuthenticatedChannelsIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/keys/': typeof AuthenticatedKeysIndexRoute
@@ -415,6 +484,7 @@ export interface FileRoutesByFullPath {
   '/system-settings/maintenance/$section': typeof AuthenticatedSystemSettingsMaintenanceSectionRoute
   '/system-settings/models/$section': typeof AuthenticatedSystemSettingsModelsSectionRoute
   '/system-settings/request-limits/$section': typeof AuthenticatedSystemSettingsRequestLimitsSectionRoute
+  '/share/$section/$slug/$child': typeof ShareSectionSlugChildRoute
   '/system-settings/auth/': typeof AuthenticatedSystemSettingsAuthIndexRoute
   '/system-settings/content/': typeof AuthenticatedSystemSettingsContentIndexRoute
   '/system-settings/general/': typeof AuthenticatedSystemSettingsGeneralIndexRoute
@@ -440,15 +510,24 @@ export interface FileRoutesByTo {
   '/503': typeof errors503Route
   '/chat2link': typeof AuthenticatedChat2linkRoute
   '/oauth/$provider': typeof OauthProviderRoute
+  '/share/$section': typeof ShareSectionRouteWithChildren
+  '/share/console': typeof ShareConsoleRoute
+  '/share/login': typeof ShareLoginRoute
+  '/share/register': typeof ShareRegisterRoute
   '/about': typeof AboutIndexRoute
+  '/marketplace': typeof MarketplaceIndexRoute
   '/pricing': typeof PricingIndexRoute
   '/setup': typeof SetupIndexRoute
+  '/share-center': typeof ShareCenterIndexRoute
+  '/share': typeof ShareIndexRoute
+  '/tools': typeof ToolsIndexRoute
   '/user/reset': typeof authUserResetRoute
   '/chat/$chatId': typeof AuthenticatedChatChatIdRoute
   '/dashboard/$section': typeof AuthenticatedDashboardSectionRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/models/$section': typeof AuthenticatedModelsSectionRoute
   '/usage-logs/$section': typeof AuthenticatedUsageLogsSectionRoute
+  '/share/$section/$slug': typeof ShareSectionSlugRouteWithChildren
   '/channels': typeof AuthenticatedChannelsIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/keys': typeof AuthenticatedKeysIndexRoute
@@ -469,6 +548,7 @@ export interface FileRoutesByTo {
   '/system-settings/maintenance/$section': typeof AuthenticatedSystemSettingsMaintenanceSectionRoute
   '/system-settings/models/$section': typeof AuthenticatedSystemSettingsModelsSectionRoute
   '/system-settings/request-limits/$section': typeof AuthenticatedSystemSettingsRequestLimitsSectionRoute
+  '/share/$section/$slug/$child': typeof ShareSectionSlugChildRoute
   '/system-settings/auth': typeof AuthenticatedSystemSettingsAuthIndexRoute
   '/system-settings/content': typeof AuthenticatedSystemSettingsContentIndexRoute
   '/system-settings/general': typeof AuthenticatedSystemSettingsGeneralIndexRoute
@@ -498,15 +578,24 @@ export interface FileRoutesById {
   '/(errors)/503': typeof errors503Route
   '/_authenticated/chat2link': typeof AuthenticatedChat2linkRoute
   '/oauth/$provider': typeof OauthProviderRoute
+  '/share/$section': typeof ShareSectionRouteWithChildren
+  '/share/console': typeof ShareConsoleRoute
+  '/share/login': typeof ShareLoginRoute
+  '/share/register': typeof ShareRegisterRoute
   '/about/': typeof AboutIndexRoute
+  '/marketplace/': typeof MarketplaceIndexRoute
   '/pricing/': typeof PricingIndexRoute
   '/setup/': typeof SetupIndexRoute
+  '/share-center/': typeof ShareCenterIndexRoute
+  '/share/': typeof ShareIndexRoute
+  '/tools/': typeof ToolsIndexRoute
   '/(auth)/user/reset': typeof authUserResetRoute
   '/_authenticated/chat/$chatId': typeof AuthenticatedChatChatIdRoute
   '/_authenticated/dashboard/$section': typeof AuthenticatedDashboardSectionRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/models/$section': typeof AuthenticatedModelsSectionRoute
   '/_authenticated/usage-logs/$section': typeof AuthenticatedUsageLogsSectionRoute
+  '/share/$section/$slug': typeof ShareSectionSlugRouteWithChildren
   '/_authenticated/channels/': typeof AuthenticatedChannelsIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/keys/': typeof AuthenticatedKeysIndexRoute
@@ -527,6 +616,7 @@ export interface FileRoutesById {
   '/_authenticated/system-settings/maintenance/$section': typeof AuthenticatedSystemSettingsMaintenanceSectionRoute
   '/_authenticated/system-settings/models/$section': typeof AuthenticatedSystemSettingsModelsSectionRoute
   '/_authenticated/system-settings/request-limits/$section': typeof AuthenticatedSystemSettingsRequestLimitsSectionRoute
+  '/share/$section/$slug/$child': typeof ShareSectionSlugChildRoute
   '/_authenticated/system-settings/auth/': typeof AuthenticatedSystemSettingsAuthIndexRoute
   '/_authenticated/system-settings/content/': typeof AuthenticatedSystemSettingsContentIndexRoute
   '/_authenticated/system-settings/general/': typeof AuthenticatedSystemSettingsGeneralIndexRoute
@@ -555,15 +645,24 @@ export interface FileRouteTypes {
     | '/503'
     | '/chat2link'
     | '/oauth/$provider'
+    | '/share/$section'
+    | '/share/console'
+    | '/share/login'
+    | '/share/register'
     | '/about/'
+    | '/marketplace/'
     | '/pricing/'
     | '/setup/'
+    | '/share-center/'
+    | '/share/'
+    | '/tools/'
     | '/user/reset'
     | '/chat/$chatId'
     | '/dashboard/$section'
     | '/errors/$error'
     | '/models/$section'
     | '/usage-logs/$section'
+    | '/share/$section/$slug'
     | '/channels/'
     | '/dashboard/'
     | '/keys/'
@@ -584,6 +683,7 @@ export interface FileRouteTypes {
     | '/system-settings/maintenance/$section'
     | '/system-settings/models/$section'
     | '/system-settings/request-limits/$section'
+    | '/share/$section/$slug/$child'
     | '/system-settings/auth/'
     | '/system-settings/content/'
     | '/system-settings/general/'
@@ -609,15 +709,24 @@ export interface FileRouteTypes {
     | '/503'
     | '/chat2link'
     | '/oauth/$provider'
+    | '/share/$section'
+    | '/share/console'
+    | '/share/login'
+    | '/share/register'
     | '/about'
+    | '/marketplace'
     | '/pricing'
     | '/setup'
+    | '/share-center'
+    | '/share'
+    | '/tools'
     | '/user/reset'
     | '/chat/$chatId'
     | '/dashboard/$section'
     | '/errors/$error'
     | '/models/$section'
     | '/usage-logs/$section'
+    | '/share/$section/$slug'
     | '/channels'
     | '/dashboard'
     | '/keys'
@@ -638,6 +747,7 @@ export interface FileRouteTypes {
     | '/system-settings/maintenance/$section'
     | '/system-settings/models/$section'
     | '/system-settings/request-limits/$section'
+    | '/share/$section/$slug/$child'
     | '/system-settings/auth'
     | '/system-settings/content'
     | '/system-settings/general'
@@ -666,15 +776,24 @@ export interface FileRouteTypes {
     | '/(errors)/503'
     | '/_authenticated/chat2link'
     | '/oauth/$provider'
+    | '/share/$section'
+    | '/share/console'
+    | '/share/login'
+    | '/share/register'
     | '/about/'
+    | '/marketplace/'
     | '/pricing/'
     | '/setup/'
+    | '/share-center/'
+    | '/share/'
+    | '/tools/'
     | '/(auth)/user/reset'
     | '/_authenticated/chat/$chatId'
     | '/_authenticated/dashboard/$section'
     | '/_authenticated/errors/$error'
     | '/_authenticated/models/$section'
     | '/_authenticated/usage-logs/$section'
+    | '/share/$section/$slug'
     | '/_authenticated/channels/'
     | '/_authenticated/dashboard/'
     | '/_authenticated/keys/'
@@ -695,6 +814,7 @@ export interface FileRouteTypes {
     | '/_authenticated/system-settings/maintenance/$section'
     | '/_authenticated/system-settings/models/$section'
     | '/_authenticated/system-settings/request-limits/$section'
+    | '/share/$section/$slug/$child'
     | '/_authenticated/system-settings/auth/'
     | '/_authenticated/system-settings/content/'
     | '/_authenticated/system-settings/general/'
@@ -716,9 +836,17 @@ export interface RootRouteChildren {
   errors500Route: typeof errors500Route
   errors503Route: typeof errors503Route
   OauthProviderRoute: typeof OauthProviderRoute
+  ShareSectionRoute: typeof ShareSectionRouteWithChildren
+  ShareConsoleRoute: typeof ShareConsoleRoute
+  ShareLoginRoute: typeof ShareLoginRoute
+  ShareRegisterRoute: typeof ShareRegisterRoute
   AboutIndexRoute: typeof AboutIndexRoute
+  MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   PricingIndexRoute: typeof PricingIndexRoute
   SetupIndexRoute: typeof SetupIndexRoute
+  ShareCenterIndexRoute: typeof ShareCenterIndexRoute
+  ShareIndexRoute: typeof ShareIndexRoute
+  ToolsIndexRoute: typeof ToolsIndexRoute
   PricingModelIdIndexRoute: typeof PricingModelIdIndexRoute
 }
 
@@ -759,6 +887,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tools/': {
+      id: '/tools/'
+      path: '/tools'
+      fullPath: '/tools/'
+      preLoaderRoute: typeof ToolsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/share/': {
+      id: '/share/'
+      path: '/share'
+      fullPath: '/share/'
+      preLoaderRoute: typeof ShareIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/share-center/': {
+      id: '/share-center/'
+      path: '/share-center'
+      fullPath: '/share-center/'
+      preLoaderRoute: typeof ShareCenterIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/setup/': {
       id: '/setup/'
       path: '/setup'
@@ -773,11 +922,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PricingIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/marketplace/': {
+      id: '/marketplace/'
+      path: '/marketplace'
+      fullPath: '/marketplace/'
+      preLoaderRoute: typeof MarketplaceIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about/': {
       id: '/about/'
       path: '/about'
       fullPath: '/about/'
       preLoaderRoute: typeof AboutIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/share/register': {
+      id: '/share/register'
+      path: '/share/register'
+      fullPath: '/share/register'
+      preLoaderRoute: typeof ShareRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/share/login': {
+      id: '/share/login'
+      path: '/share/login'
+      fullPath: '/share/login'
+      preLoaderRoute: typeof ShareLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/share/console': {
+      id: '/share/console'
+      path: '/share/console'
+      fullPath: '/share/console'
+      preLoaderRoute: typeof ShareConsoleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/share/$section': {
+      id: '/share/$section'
+      path: '/share/$section'
+      fullPath: '/share/$section'
+      preLoaderRoute: typeof ShareSectionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/oauth/$provider': {
@@ -969,6 +1153,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChannelsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/share/$section/$slug': {
+      id: '/share/$section/$slug'
+      path: '/$slug'
+      fullPath: '/share/$section/$slug'
+      preLoaderRoute: typeof ShareSectionSlugRouteImport
+      parentRoute: typeof ShareSectionRoute
+    }
     '/_authenticated/usage-logs/$section': {
       id: '/_authenticated/usage-logs/$section'
       path: '/usage-logs/$section'
@@ -1059,6 +1250,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/system-settings/auth/'
       preLoaderRoute: typeof AuthenticatedSystemSettingsAuthIndexRouteImport
       parentRoute: typeof AuthenticatedSystemSettingsRouteRoute
+    }
+    '/share/$section/$slug/$child': {
+      id: '/share/$section/$slug/$child'
+      path: '/$child'
+      fullPath: '/share/$section/$slug/$child'
+      preLoaderRoute: typeof ShareSectionSlugChildRouteImport
+      parentRoute: typeof ShareSectionSlugRoute
     }
     '/_authenticated/system-settings/request-limits/$section': {
       id: '/_authenticated/system-settings/request-limits/$section'
@@ -1240,6 +1438,29 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface ShareSectionSlugRouteChildren {
+  ShareSectionSlugChildRoute: typeof ShareSectionSlugChildRoute
+}
+
+const ShareSectionSlugRouteChildren: ShareSectionSlugRouteChildren = {
+  ShareSectionSlugChildRoute: ShareSectionSlugChildRoute,
+}
+
+const ShareSectionSlugRouteWithChildren =
+  ShareSectionSlugRoute._addFileChildren(ShareSectionSlugRouteChildren)
+
+interface ShareSectionRouteChildren {
+  ShareSectionSlugRoute: typeof ShareSectionSlugRouteWithChildren
+}
+
+const ShareSectionRouteChildren: ShareSectionRouteChildren = {
+  ShareSectionSlugRoute: ShareSectionSlugRouteWithChildren,
+}
+
+const ShareSectionRouteWithChildren = ShareSectionRoute._addFileChildren(
+  ShareSectionRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   authRouteRoute: authRouteRouteWithChildren,
@@ -1252,9 +1473,17 @@ const rootRouteChildren: RootRouteChildren = {
   errors500Route: errors500Route,
   errors503Route: errors503Route,
   OauthProviderRoute: OauthProviderRoute,
+  ShareSectionRoute: ShareSectionRouteWithChildren,
+  ShareConsoleRoute: ShareConsoleRoute,
+  ShareLoginRoute: ShareLoginRoute,
+  ShareRegisterRoute: ShareRegisterRoute,
   AboutIndexRoute: AboutIndexRoute,
+  MarketplaceIndexRoute: MarketplaceIndexRoute,
   PricingIndexRoute: PricingIndexRoute,
   SetupIndexRoute: SetupIndexRoute,
+  ShareCenterIndexRoute: ShareCenterIndexRoute,
+  ShareIndexRoute: ShareIndexRoute,
+  ToolsIndexRoute: ToolsIndexRoute,
   PricingModelIdIndexRoute: PricingModelIdIndexRoute,
 }
 export const routeTree = rootRouteImport
