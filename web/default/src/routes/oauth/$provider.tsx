@@ -10,6 +10,10 @@ import i18next from 'i18next'
 import { toast } from 'sonner'
 import { useAuthStore, type AuthUser } from '@/stores/auth-store'
 import { api, getSelf } from '@/lib/api'
+import {
+  DEFAULT_AUTH_REDIRECT,
+  normalizeInternalRedirect,
+} from '@/lib/navigation'
 import { OAuthCallbackScreen } from '@/features/auth/components/oauth-callback-screen'
 import { OAUTH_BIND_STORAGE_KEY } from '@/features/auth/constants'
 
@@ -41,19 +45,20 @@ function OAuthCallback() {
   useEffect(() => {
     ;(async () => {
       const safeNavigate = (target: string) => {
-        navigate({ to: target as never, replace: true })
+        const normalizedTarget = normalizeInternalRedirect(
+          target,
+          DEFAULT_AUTH_REDIRECT
+        )
+        navigate({ to: normalizedTarget as never, replace: true })
         if (typeof window !== 'undefined') {
           setTimeout(() => {
-            const normalizedTarget = target.startsWith('/')
-              ? target
-              : `/${target}`
             const currentPath =
               window.location.pathname + window.location.search
             if (
               currentPath !== normalizedTarget &&
               currentPath !== `${normalizedTarget}/`
             ) {
-              window.location.replace(target)
+              window.location.replace(normalizedTarget)
             }
           }, 100)
         }
@@ -125,7 +130,10 @@ function OAuthCallback() {
       }
 
       const redirectAfterLogin = (target?: string) => {
-        const to = target || search?.redirect || '/dashboard'
+        const to = normalizeInternalRedirect(
+          target || search?.redirect,
+          DEFAULT_AUTH_REDIRECT
+        )
         safeNavigate(to)
         toast.success(i18next.t('Signed in successfully!'))
       }

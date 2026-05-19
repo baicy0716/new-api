@@ -106,7 +106,7 @@ function parseSidebarConfig(
   value: string | null | undefined
 ): SidebarModulesAdminConfig {
   // If empty string, null, or undefined, use default config
-  if (!value || value.trim() === '') {
+  if (typeof value !== 'string' || value.trim() === '') {
     return DEFAULT_SIDEBAR_MODULES
   }
 
@@ -128,7 +128,7 @@ function parseSidebarConfig(
 function parseUserSidebarConfig(
   value: string | null | undefined
 ): SidebarModulesUserConfig {
-  if (!value || value.trim() === '') {
+  if (typeof value !== 'string' || value.trim() === '') {
     return null
   }
   try {

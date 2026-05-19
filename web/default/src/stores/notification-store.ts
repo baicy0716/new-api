@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { createSafePersistStorage } from '@/lib/persist-storage'
 
 interface NotificationState {
   // Last read Notice content signature (full trimmed message)
@@ -16,6 +17,11 @@ interface NotificationState {
   isAnnouncementRead: (key: string) => boolean
   isNoticeClosed: () => boolean
 }
+
+type NotificationPersistedState = Pick<
+  NotificationState,
+  'lastReadNotice' | 'readAnnouncementKeys' | 'closedUntilDate'
+>
 
 /**
  * Notification store for tracking read status of Notice and Announcements
@@ -60,6 +66,7 @@ export const useNotificationStore = create<NotificationState>()(
     }),
     {
       name: 'notification-storage',
+      storage: createSafePersistStorage<NotificationPersistedState>(),
       partialize: (state) => ({
         lastReadNotice: state.lastReadNotice,
         readAnnouncementKeys: state.readAnnouncementKeys,

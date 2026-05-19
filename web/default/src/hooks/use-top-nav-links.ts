@@ -39,11 +39,11 @@ export function useTopNavLinks(): TopNavLink[] {
   const modules = useMemo(() => {
     const raw = status?.HeaderNavModules
     // If empty string, null, or undefined, use default config
-    if (!raw || (raw as string).trim() === '') {
+    if (typeof raw !== 'string' || raw.trim() === '') {
       return DEFAULT_HEADER_NAV_MODULES
     }
     try {
-      return JSON.parse(raw as string)
+      return JSON.parse(raw)
     } catch {
       // Parse failed, use default config
       return DEFAULT_HEADER_NAV_MODULES

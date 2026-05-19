@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { DEFAULT_SYSTEM_NAME, DEFAULT_LOGO } from '@/lib/constants'
+import { createSafePersistStorage } from '@/lib/persist-storage'
 
 export type CurrencyDisplayType = 'USD' | 'CNY' | 'TOKENS' | 'CUSTOM'
 
@@ -46,6 +47,11 @@ interface SystemConfigState {
   setLoading: (loading: boolean) => void
 }
 
+type SystemConfigPersistedState = Pick<
+  SystemConfigState,
+  'config' | 'loadedLogoUrl'
+>
+
 /**
  * System configuration store with automatic persistence
  * Manages system name, logo, footer HTML and loading states
@@ -76,6 +82,7 @@ export const useSystemConfigStore = create<SystemConfigState>()(
     }),
     {
       name: 'system-config-storage',
+      storage: createSafePersistStorage<SystemConfigPersistedState>(),
       partialize: (state) => ({
         config: state.config,
         loadedLogoUrl: state.loadedLogoUrl,
