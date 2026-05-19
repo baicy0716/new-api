@@ -38,6 +38,37 @@ function scopeCmsStyles(styles: string) {
     .replace(/\.nav-dropdown(?![-\w])/g, '.kg-cms-scope .nav-dropdown')
 }
 
+function enhanceCmsHtml(html: string, path: string) {
+  if (typeof window === 'undefined' || typeof DOMParser === 'undefined') {
+    return html
+  }
+
+  const doc = new DOMParser().parseFromString(html, 'text/html')
+  const isHomePage = path === '/share/' || path === '/share'
+
+  if (isHomePage) {
+    const hero = doc.querySelector('.home-hero')
+    const cta = doc.querySelector('.home-cta')
+    const logos = doc.querySelector('.home-logos')
+
+    if (hero && cta && logos && logos.parentElement !== hero) {
+      cta.insertAdjacentElement('afterend', logos)
+      logos.classList.add('home-logos-in-hero')
+    }
+  }
+
+  if (!isHomePage) {
+    const hero = doc.querySelector('.page-hero-band')
+    const divider = doc.querySelector('.page-hero-divider')
+
+    if (hero && !divider) {
+      hero.insertAdjacentHTML('afterend', '<div class="page-hero-divider"></div>')
+    }
+  }
+
+  return doc.body.innerHTML
+}
+
 export function CmsPage({ path }: CmsPageProps) {
   const { t } = useTranslation()
   const isHomePage = path === '/share/' || path === '/share'
@@ -46,6 +77,7 @@ export function CmsPage({ path }: CmsPageProps) {
     queryFn: () => getCmsPage(path),
     staleTime: 5_000,
   })
+  const enhancedHtml = data ? enhanceCmsHtml(data.html, path) : ''
 
   useEffect(() => {
     if (!data) return
@@ -118,9 +150,11 @@ export function CmsPage({ path }: CmsPageProps) {
           className={
             isHomePage
               ? 'kg-cms-scope kg-cms-home min-h-screen'
-              : 'kg-cms-scope kg-cms-page min-h-screen'
+              : `kg-cms-scope kg-cms-page min-h-screen ${
+                  path === '/share/playground' ? 'kg-cms-playground' : ''
+                }`
           }
-          dangerouslySetInnerHTML={{ __html: data.html }}
+          dangerouslySetInnerHTML={{ __html: enhancedHtml }}
         />
         {data.footerHtml ? (
           <div dangerouslySetInnerHTML={{ __html: data.footerHtml }} />

@@ -149,7 +149,7 @@ export function PublicHeader(props: PublicHeaderProps) {
     ? links.filter((link) =>
         ['/share/', '/share/models', '/share/tools', '/share/playground'].includes(
           link.href
-        )
+        ) || link.href === '/share/changelog'
       )
     : links
   const overflowLinks = isCmsVariant
