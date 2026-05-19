@@ -465,13 +465,13 @@
   }
 
   .kg-cms-home .home-logos-in-hero {
-    margin-top: -18px;
-    margin-bottom: 0;
-    padding-inline: 0;
+    margin-top: -32px !important;
+    margin-bottom: 0 !important;
+    padding-inline: 0 !important;
   }
 
   .kg-cms-home .home-logos-in-hero .home-logos-label {
-    margin-bottom: 6px;
+    margin-bottom: 6px !important;
   }
 
   .kg-cms-home .home-logos-in-hero .home-logos-label,
