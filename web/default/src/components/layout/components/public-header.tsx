@@ -1,12 +1,19 @@
 import { useEffect, useState } from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
+import { ChevronDown } from 'lucide-react'
 import { useAuthStore } from '@/stores/auth-store'
 import { cn } from '@/lib/utils'
 import { useNotifications } from '@/hooks/use-notifications'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { useTopNavLinks } from '@/hooks/use-top-nav-links'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { NotificationButton } from '@/components/notification-button'
@@ -64,6 +71,30 @@ function NavLinkLabel({ link }: { link: TopNavLink }) {
   )
 }
 
+function DesktopNavLink({
+  link,
+  className,
+  children,
+}: {
+  link: TopNavLink
+  className?: string
+  children: React.ReactNode
+}) {
+  if (link.external) {
+    return (
+      <ExternalHeaderLink link={link} className={className}>
+        {children}
+      </ExternalHeaderLink>
+    )
+  }
+
+  return (
+    <Link to={link.href} className={className}>
+      {children}
+    </Link>
+  )
+}
+
 export interface PublicHeaderProps {
   navLinks?: TopNavLink[]
   mobileLinks?: TopNavLink[]
@@ -114,6 +145,20 @@ export function PublicHeader(props: PublicHeaderProps) {
   const displaySiteName = customSiteName || systemName
   const links = dynamicLinks.length > 0 ? dynamicLinks : navLinks
   const isCmsVariant = variant === 'cms'
+  const primaryLinks = isCmsVariant
+    ? links.filter((link) =>
+        ['/share/', '/share/models', '/share/tools', '/share/playground'].includes(
+          link.href
+        )
+      )
+    : links
+  const overflowLinks = isCmsVariant
+    ? links.filter((link) => !primaryLinks.includes(link))
+    : []
+  const hasActiveOverflowLink = overflowLinks.some((link) =>
+    isPublicLinkActive(pathname, link.href)
+  )
+  const hasOverflowIndicator = overflowLinks.some((link) => link.showIndicatorDot)
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : ''
@@ -170,32 +215,16 @@ export function PublicHeader(props: PublicHeaderProps) {
             </Link>
 
             {/* Desktop nav */}
-            <div className='hidden min-w-0 flex-1 items-center min-[1400px]:flex'>
-              <div className='kg-shell-links flex min-w-0 flex-1 items-center gap-0.5'>
-                {links.map((link, i) => {
+            <div className='hidden min-w-0 flex-1 items-center xl:flex'>
+              <div className='kg-shell-links flex min-w-0 flex-1 items-center'>
+                {primaryLinks.map((link, i) => {
                   const isActive = isPublicLinkActive(pathname, link.href)
-                  if (link.external) {
-                    return (
-                      <ExternalHeaderLink
-                        key={i}
-                        link={link}
-                        className={cn(
-                          'kg-shell-link rounded-lg px-3 py-2 text-sm font-medium',
-                          link.showIndicatorDot
-                            ? 'kg-shell-link-highlight text-foreground'
-                            : 'text-muted-foreground hover:text-foreground'
-                        )}
-                      >
-                        <NavLinkLabel link={{ ...link, title: t(link.title) }} />
-                      </ExternalHeaderLink>
-                    )
-                  }
                   return (
-                    <Link
+                    <DesktopNavLink
                       key={i}
-                      to={link.href}
+                      link={link}
                       className={cn(
-                        'kg-shell-link rounded-lg px-3 py-2 text-sm font-medium',
+                        'kg-shell-link rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap',
                         link.showIndicatorDot && 'kg-shell-link-highlight',
                         isActive
                           ? 'kg-shell-link-active text-foreground'
@@ -203,9 +232,74 @@ export function PublicHeader(props: PublicHeaderProps) {
                       )}
                     >
                       <NavLinkLabel link={{ ...link, title: t(link.title) }} />
-                    </Link>
+                    </DesktopNavLink>
                   )
                 })}
+
+                {overflowLinks.length > 0 && (
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className={cn(
+                          'kg-shell-link kg-shell-more-trigger inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap',
+                          hasActiveOverflowLink
+                            ? 'kg-shell-link-active text-foreground'
+                            : 'text-muted-foreground hover:text-foreground'
+                        )}
+                      >
+                        <span>{t('更多')}</span>
+                        {hasOverflowIndicator ? (
+                          <span
+                            aria-hidden='true'
+                            className='kg-shell-link-dot inline-block size-1.5 rounded-full'
+                          />
+                        ) : null}
+                        <ChevronDown className='size-3.5 opacity-70' />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align='center'
+                      sideOffset={12}
+                      className='kg-shell-more-menu w-44 rounded-2xl p-1.5'
+                    >
+                      {overflowLinks.map((link, i) => {
+                        const isActive = isPublicLinkActive(pathname, link.href)
+                        const itemClassName = cn(
+                          'kg-shell-more-item flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm',
+                          link.showIndicatorDot && 'kg-shell-more-highlight',
+                          isActive
+                            ? 'kg-shell-more-item-active text-foreground'
+                            : 'text-muted-foreground'
+                        )
+
+                        if (link.external) {
+                          return (
+                            <DropdownMenuItem key={i} asChild>
+                              <ExternalHeaderLink
+                                link={link}
+                                className={itemClassName}
+                              >
+                                <NavLinkLabel
+                                  link={{ ...link, title: t(link.title) }}
+                                />
+                              </ExternalHeaderLink>
+                            </DropdownMenuItem>
+                          )
+                        }
+
+                        return (
+                          <DropdownMenuItem key={i} asChild>
+                            <Link to={link.href} className={itemClassName}>
+                              <NavLinkLabel
+                                link={{ ...link, title: t(link.title) }}
+                              />
+                            </Link>
+                          </DropdownMenuItem>
+                        )
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
 
               <div className='kg-shell-toolbar flex shrink-0 items-center'>
@@ -265,7 +359,7 @@ export function PublicHeader(props: PublicHeaderProps) {
             </div>
 
             {/* Mobile: compact actions + hamburger */}
-            <div className='flex items-center gap-2 min-[1400px]:hidden'>
+            <div className='flex items-center gap-2 xl:hidden'>
               {showThemeSwitch && <ThemeSwitch />}
               {showAuthButtons && !loading && isAuthenticated && (
                 <>
@@ -306,7 +400,7 @@ export function PublicHeader(props: PublicHeaderProps) {
       {/* Mobile full-screen overlay */}
       <div
         className={cn(
-          'bg-background/98 fixed inset-0 z-40 backdrop-blur-2xl min-[1400px]:pointer-events-none min-[1400px]:hidden',
+          'bg-background/98 fixed inset-0 z-40 backdrop-blur-2xl xl:pointer-events-none xl:hidden',
           mobileOpen ? 'pointer-events-auto block' : 'pointer-events-none hidden'
         )}
       >
