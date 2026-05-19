@@ -170,34 +170,42 @@
     gap: 4px;
   }
 
-  .dark .kg-shell-cms-nav {
+  :is(.dark, [data-theme='dark']) .kg-shell-cms-nav {
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(248, 250, 252, 0.74) 100%),
-      rgba(255, 255, 255, 0.72);
-    border-color: rgba(226, 232, 240, 0.32);
+      linear-gradient(180deg, rgba(30, 41, 59, 0.82) 0%, rgba(15, 23, 42, 0.72) 100%),
+      rgba(15, 23, 42, 0.72);
+    border-color: rgba(148, 163, 184, 0.2);
     box-shadow:
-      0 24px 52px -34px rgba(2, 6, 23, 0.58),
-      0 10px 22px -20px rgba(2, 6, 23, 0.34),
-      inset 0 1px 0 rgba(255, 255, 255, 0.78);
-    color: rgb(15, 23, 42);
+      0 24px 52px -34px rgba(0, 0, 0, 0.82),
+      0 10px 22px -20px rgba(0, 0, 0, 0.46),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    color: rgb(241, 245, 249);
   }
 
-  .dark .kg-shell-cms-nav .kg-shell-brand-text {
-    color: rgb(15, 23, 42);
+  :is(.dark, [data-theme='dark']) .kg-shell-cms-nav::before {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
   }
 
-  .dark .kg-shell-cms-nav .kg-shell-link:not(.kg-shell-link-active):not(
+  :is(.dark, [data-theme='dark']) .kg-shell-cms-nav .kg-shell-brand-text {
+    color: rgb(248, 250, 252);
+  }
+
+  :is(.dark, [data-theme='dark']) .kg-shell-cms-nav .kg-shell-link:not(.kg-shell-link-active):not(
       .kg-shell-link-highlight
     ) {
-    color: rgba(51, 65, 85, 0.88) !important;
+    color: rgba(226, 232, 240, 0.86) !important;
   }
 
-  .dark .kg-shell-cms-nav .kg-shell-link:not(.kg-shell-link-active):hover {
-    color: rgb(15, 23, 42) !important;
+  :is(.dark, [data-theme='dark']) .kg-shell-cms-nav .kg-shell-link:not(.kg-shell-link-active):hover {
+    color: rgb(255, 255, 255) !important;
   }
 
-  .dark .kg-shell-cms-nav button:not(.kg-shell-btn-primary) {
-    color: rgba(51, 65, 85, 0.88);
+  :is(.dark, [data-theme='dark']) .kg-shell-cms-nav button:not(.kg-shell-btn-primary) {
+    color: rgba(226, 232, 240, 0.86);
   }
 
   .kg-shell-links {
@@ -274,18 +282,18 @@
     color: rgb(254, 226, 226) !important;
   }
 
-  .dark .kg-shell-link-active {
-    background: rgba(15, 23, 42, 0.08);
-    border-color: rgba(15, 23, 42, 0.08);
+  :is(.dark, [data-theme='dark']) .kg-shell-link-active {
+    background: rgba(255, 255, 255, 0.13);
+    border-color: rgba(255, 255, 255, 0.14);
     box-shadow:
-      0 14px 28px -24px rgba(15, 23, 42, 0.44),
-      inset 0 1px 0 rgba(255, 255, 255, 0.72);
-    color: rgb(15, 23, 42) !important;
+      0 14px 28px -24px rgba(0, 0, 0, 0.58),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    color: rgb(255, 255, 255) !important;
   }
 
-  .dark .kg-shell-link:hover {
-    background: rgba(255, 255, 255, 0.58);
-    border-color: rgba(148, 163, 184, 0.18);
+  :is(.dark, [data-theme='dark']) .kg-shell-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 
   .kg-shell-link-highlight {
@@ -311,7 +319,7 @@
     );
   }
 
-  .dark .kg-shell-link-highlight {
+  :is(.dark, [data-theme='dark']) .kg-shell-link-highlight {
     color: rgb(254, 226, 226) !important;
     background: linear-gradient(
       90deg,
@@ -321,9 +329,9 @@
     box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.16);
   }
 
-  .dark .kg-shell-more-menu {
-    border-color: rgba(226, 232, 240, 0.28);
-    background: rgba(255, 255, 255, 0.88);
+  :is(.dark, [data-theme='dark']) .kg-shell-more-menu {
+    border-color: rgba(148, 163, 184, 0.2);
+    background: rgba(15, 23, 42, 0.9);
     box-shadow:
       0 28px 42px -30px rgba(2, 6, 23, 0.84),
       0 12px 24px -22px rgba(2, 6, 23, 0.54);
@@ -331,15 +339,15 @@
     -webkit-backdrop-filter: blur(20px) saturate(170%);
   }
 
-  .dark .kg-shell-more-item[data-highlighted],
-  .dark .kg-shell-more-item:hover,
-  .dark .kg-shell-more-item-active {
-    background: rgba(15, 23, 42, 0.08) !important;
-    border-color: rgba(15, 23, 42, 0.1);
-    color: rgb(15, 23, 42) !important;
+  :is(.dark, [data-theme='dark']) .kg-shell-more-item[data-highlighted],
+  :is(.dark, [data-theme='dark']) .kg-shell-more-item:hover,
+  :is(.dark, [data-theme='dark']) .kg-shell-more-item-active {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.14);
+    color: rgb(255, 255, 255) !important;
   }
 
-  .dark .kg-shell-more-highlight {
+  :is(.dark, [data-theme='dark']) .kg-shell-more-highlight {
     color: rgb(254, 226, 226) !important;
   }
 
