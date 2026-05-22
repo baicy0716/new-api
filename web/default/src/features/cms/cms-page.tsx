@@ -47,32 +47,6 @@ function enhanceCmsHtml(html: string, path: string) {
   const isHomePage = path === '/share/' || path === '/share'
 
   if (isHomePage) {
-    const poweredByMarkup = `
-      <section class="kg-home-powered" aria-label="Powered by providers">
-        <div class="kg-home-powered-label">Powered by</div>
-        <div class="kg-home-powered-row">
-          <span>OpenAI</span>
-          <span>Anthropic</span>
-          <span>Google Gemini</span>
-          <span>Qwen</span>
-          <span>Moonshot</span>
-        </div>
-      </section>
-    `
-    const existingPoweredBy = doc.querySelector('.home-logos, .kg-home-powered')
-    const promoWrap = doc.querySelector('.home-promo-wrap')
-
-    if (existingPoweredBy) {
-      existingPoweredBy.remove()
-    }
-
-    if (promoWrap) {
-      promoWrap.insertAdjacentHTML('afterend', poweredByMarkup)
-    } else {
-      const hero = doc.querySelector('.home-hero')
-      hero?.insertAdjacentHTML('afterend', poweredByMarkup)
-    }
-
     const sectionFallbacks = [
       {
         title: '为什么选我们',
@@ -183,42 +157,49 @@ function getCmsOverrideStyles(path: string) {
           0 8px 24px -20px rgba(15, 23, 42, 0.16) !important;
       }
 
-      .kg-cms-home .kg-home-powered {
-        max-width: 1120px;
-        margin: clamp(18px, 3vw, 28px) auto clamp(42px, 5vw, 64px) !important;
-        padding: 0 var(--kg-px);
+      .kg-cms-home .home-logos {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        max-width: 1024px !important;
+        margin: 0 auto clamp(56px, 8vw, 96px) !important;
+        padding: 0 var(--kg-px) !important;
         position: relative !important;
         z-index: 3 !important;
-        text-align: center;
       }
 
-      .kg-cms-home .kg-home-powered-label {
+      .kg-cms-home .home-logos-label {
         display: block !important;
-        margin-bottom: 18px !important;
-        font-size: clamp(13px, 1.5vw, 15px) !important;
-        font-weight: 800 !important;
-        letter-spacing: 0.2em !important;
-        color: rgba(15, 23, 42, 0.72) !important;
-        line-height: 1.2 !important;
-        text-transform: uppercase;
+        text-align: center !important;
+        font-family: var(--kg-mono) !important;
+        font-size: 11px !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.16em !important;
+        text-transform: uppercase !important;
+        color: var(--ink-5) !important;
+        -webkit-text-fill-color: var(--ink-5) !important;
+        background: none !important;
+        margin-bottom: 24px !important;
       }
 
-      .kg-cms-home .kg-home-powered-row {
+      .kg-cms-home .home-logos-row {
         display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
-        gap: clamp(16px, 3vw, 34px) !important;
-        row-gap: 12px !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: clamp(28px, 5vw, 56px) !important;
       }
 
-      .kg-cms-home .kg-home-powered-row span {
+      .kg-cms-home .home-logos-row span {
         display: inline-block !important;
-        font-size: clamp(19px, 2vw, 24px) !important;
-        font-weight: 800 !important;
-        color: rgba(15, 23, 42, 0.9) !important;
-        line-height: 1.25 !important;
-        letter-spacing: 0 !important;
+        font-family: var(--kg-serif) !important;
+        font-size: 16px !important;
+        font-weight: 500 !important;
+        color: var(--ink-4) !important;
+        -webkit-text-fill-color: var(--ink-4) !important;
+        background: none !important;
+        line-height: 1.3 !important;
+        letter-spacing: -0.005em !important;
       }
 
       .kg-cms-home .home-stats {
@@ -230,6 +211,12 @@ function getCmsOverrideStyles(path: string) {
       }
 
       .kg-cms-home .home-section-head {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        overflow: visible !important;
+        position: relative !important;
+        z-index: 4 !important;
         margin-bottom: clamp(28px, 4vw, 44px) !important;
         text-align: center !important;
       }
@@ -244,12 +231,27 @@ function getCmsOverrideStyles(path: string) {
         letter-spacing: 0.16em !important;
         text-transform: uppercase !important;
         color: rgba(71, 85, 105, 0.9) !important;
+        -webkit-text-fill-color: rgba(71, 85, 105, 0.9) !important;
+        background: none !important;
+        position: relative !important;
+        z-index: 5 !important;
       }
 
       .kg-cms-home .home-section-title {
         display: block !important;
         visibility: visible !important;
         opacity: 1 !important;
+        color: rgba(15, 23, 42, 0.96) !important;
+        -webkit-text-fill-color: rgba(15, 23, 42, 0.96) !important;
+        background: none !important;
+        position: relative !important;
+        z-index: 5 !important;
+      }
+
+      .kg-cms-home .home-section-title * {
+        color: inherit !important;
+        -webkit-text-fill-color: currentColor !important;
+        background: none !important;
       }
 
       .kg-cms-home .home-section-desc {
@@ -259,8 +261,12 @@ function getCmsOverrideStyles(path: string) {
         max-width: 680px !important;
         margin: 0 auto !important;
         color: rgba(71, 85, 105, 0.92) !important;
+        -webkit-text-fill-color: rgba(71, 85, 105, 0.92) !important;
+        background: none !important;
         font-size: clamp(15px, 1.5vw, 17px) !important;
         line-height: 1.75 !important;
+        position: relative !important;
+        z-index: 5 !important;
       }
 
       :is(.dark, [data-theme='dark']) .kg-cms-home .home-hero::before {
@@ -290,20 +296,29 @@ function getCmsOverrideStyles(path: string) {
           0 14px 28px -24px rgba(2, 6, 23, 0.56) !important;
       }
 
-      :is(.dark, [data-theme='dark']) .kg-cms-home .kg-home-powered-label {
-        color: rgba(226, 232, 240, 0.72) !important;
+      :is(.dark, [data-theme='dark']) .kg-cms-home .home-logos-label {
+        color: rgba(148, 163, 184, 0.88) !important;
+        -webkit-text-fill-color: rgba(148, 163, 184, 0.88) !important;
       }
 
-      :is(.dark, [data-theme='dark']) .kg-cms-home .kg-home-powered-row span {
-        color: rgba(248, 250, 252, 0.94) !important;
+      :is(.dark, [data-theme='dark']) .kg-cms-home .home-logos-row span {
+        color: rgba(203, 213, 225, 0.94) !important;
+        -webkit-text-fill-color: rgba(203, 213, 225, 0.94) !important;
       }
 
       :is(.dark, [data-theme='dark']) .kg-cms-home .home-section-eyebrow {
         color: rgba(148, 163, 184, 0.9) !important;
+        -webkit-text-fill-color: rgba(148, 163, 184, 0.9) !important;
+      }
+
+      :is(.dark, [data-theme='dark']) .kg-cms-home .home-section-title {
+        color: rgba(248, 250, 252, 0.96) !important;
+        -webkit-text-fill-color: rgba(248, 250, 252, 0.96) !important;
       }
 
       :is(.dark, [data-theme='dark']) .kg-cms-home .home-section-desc {
         color: rgba(203, 213, 225, 0.88) !important;
+        -webkit-text-fill-color: rgba(203, 213, 225, 0.88) !important;
       }
 
       @media (max-width: 768px) {
@@ -311,24 +326,26 @@ function getCmsOverrideStyles(path: string) {
           padding-bottom: 18px !important;
         }
 
-        .kg-cms-home .kg-home-powered {
-          margin: 18px auto 44px !important;
+        .kg-cms-home .home-logos {
+          margin: 0 auto 44px !important;
           padding-inline: 20px !important;
         }
 
-        .kg-cms-home .kg-home-powered-label {
-          margin-bottom: 14px !important;
-          font-size: 13px !important;
-          color: rgba(15, 23, 42, 0.78) !important;
+        .kg-cms-home .home-logos-label {
+          margin-bottom: 16px !important;
+          font-size: 11px !important;
+          color: rgba(100, 116, 139, 0.92) !important;
+          -webkit-text-fill-color: rgba(100, 116, 139, 0.92) !important;
         }
 
-        .kg-cms-home .kg-home-powered-row {
-          gap: 12px 18px !important;
+        .kg-cms-home .home-logos-row {
+          gap: 16px 22px !important;
         }
 
-        .kg-cms-home .kg-home-powered-row span {
-          font-size: 20px !important;
-          color: rgba(15, 23, 42, 0.92) !important;
+        .kg-cms-home .home-logos-row span {
+          font-size: 17px !important;
+          color: rgba(71, 85, 105, 0.96) !important;
+          -webkit-text-fill-color: rgba(71, 85, 105, 0.96) !important;
         }
 
         .kg-cms-home .home-section-head {
@@ -338,18 +355,33 @@ function getCmsOverrideStyles(path: string) {
         .kg-cms-home .home-section-eyebrow {
           font-size: 12px !important;
           color: rgba(51, 65, 85, 0.94) !important;
+          -webkit-text-fill-color: rgba(51, 65, 85, 0.94) !important;
+        }
+
+        .kg-cms-home .home-section-title {
+          font-size: clamp(32px, 7vw, 44px) !important;
+          color: rgba(15, 23, 42, 0.98) !important;
+          -webkit-text-fill-color: rgba(15, 23, 42, 0.98) !important;
         }
 
         .kg-cms-home .home-section-desc {
           color: rgba(51, 65, 85, 0.94) !important;
+          -webkit-text-fill-color: rgba(51, 65, 85, 0.94) !important;
         }
 
-        :is(.dark, [data-theme='dark']) .kg-cms-home .kg-home-powered-label {
-          color: rgba(226, 232, 240, 0.76) !important;
+        :is(.dark, [data-theme='dark']) .kg-cms-home .home-logos-label {
+          color: rgba(148, 163, 184, 0.9) !important;
+          -webkit-text-fill-color: rgba(148, 163, 184, 0.9) !important;
         }
 
-        :is(.dark, [data-theme='dark']) .kg-cms-home .kg-home-powered-row span {
-          color: rgba(248, 250, 252, 0.96) !important;
+        :is(.dark, [data-theme='dark']) .kg-cms-home .home-logos-row span {
+          color: rgba(226, 232, 240, 0.96) !important;
+          -webkit-text-fill-color: rgba(226, 232, 240, 0.96) !important;
+        }
+
+        :is(.dark, [data-theme='dark']) .kg-cms-home .home-section-title {
+          color: rgba(248, 250, 252, 0.98) !important;
+          -webkit-text-fill-color: rgba(248, 250, 252, 0.98) !important;
         }
       }
     `
