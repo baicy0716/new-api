@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
-import { useTranslation } from 'react-i18next'
 import { ChevronDown } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { cn } from '@/lib/utils'
 import { useNotifications } from '@/hooks/use-notifications'
@@ -23,6 +23,8 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import { defaultTopNavLinks } from '../config/top-nav.config'
 import type { TopNavLink } from '../types'
 import { HeaderLogo } from './header-logo'
+
+const CMS_BRAND_LOGO_URL = 'https://i.imgur.com/7Tkqn1t.png'
 
 function isPublicLinkActive(pathname: string, href: string) {
   if (href === '/' || href === '/share/') {
@@ -146,10 +148,14 @@ export function PublicHeader(props: PublicHeaderProps) {
   const links = dynamicLinks.length > 0 ? dynamicLinks : navLinks
   const isCmsVariant = variant === 'cms'
   const primaryLinks = isCmsVariant
-    ? links.filter((link) =>
-        ['/share/', '/share/models', '/share/tools', '/share/playground'].includes(
-          link.href
-        ) || link.href === '/share/changelog'
+    ? links.filter(
+        (link) =>
+          [
+            '/share/',
+            '/share/models',
+            '/share/tools',
+            '/share/playground',
+          ].includes(link.href) || link.href === '/share/changelog'
       )
     : links
   const overflowLinks = isCmsVariant
@@ -158,7 +164,9 @@ export function PublicHeader(props: PublicHeaderProps) {
   const hasActiveOverflowLink = overflowLinks.some((link) =>
     isPublicLinkActive(pathname, link.href)
   )
-  const hasOverflowIndicator = overflowLinks.some((link) => link.showIndicatorDot)
+  const hasOverflowIndicator = overflowLinks.some(
+    (link) => link.showIndicatorDot
+  )
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : ''
@@ -195,23 +203,40 @@ export function PublicHeader(props: PublicHeaderProps) {
               to={homeUrl}
               className='kg-shell-brand flex shrink-0 items-center gap-2.5'
             >
-              <div className='flex size-7 shrink-0 items-center justify-center'>
-                {loading ? (
-                  <Skeleton className='size-full rounded-lg' />
-                ) : customLogo ? (
-                  customLogo
-                ) : (
-                  <HeaderLogo
-                    src={systemLogo}
-                    loading={loading}
-                    logoLoaded={logoLoaded}
-                    className='size-full rounded-lg object-contain'
-                  />
-                )}
-              </div>
-              <span className='kg-shell-brand-text text-sm font-semibold tracking-tight'>
-                {loading ? <Skeleton className='h-4 w-16' /> : displaySiteName}
-              </span>
+              {isCmsVariant ? (
+                <>
+                  <span className='kg-shell-brand-mark flex size-8 shrink-0 items-center justify-center'>
+                    <img src={CMS_BRAND_LOGO_URL} alt='KuaiGouAI' />
+                  </span>
+                  <span className='kg-shell-brand-word' aria-label='KuaiGouAI'>
+                    KuaiGou<span>AI</span>
+                  </span>
+                </>
+              ) : (
+                <>
+                  <div className='flex size-7 shrink-0 items-center justify-center'>
+                    {loading ? (
+                      <Skeleton className='size-full rounded-lg' />
+                    ) : customLogo ? (
+                      customLogo
+                    ) : (
+                      <HeaderLogo
+                        src={systemLogo}
+                        loading={loading}
+                        logoLoaded={logoLoaded}
+                        className='size-full rounded-lg object-contain'
+                      />
+                    )}
+                  </div>
+                  <span className='kg-shell-brand-text text-sm font-semibold tracking-tight'>
+                    {loading ? (
+                      <Skeleton className='h-4 w-16' />
+                    ) : (
+                      displaySiteName
+                    )}
+                  </span>
+                </>
+              )}
             </Link>
 
             {/* Desktop nav */}
@@ -401,7 +426,9 @@ export function PublicHeader(props: PublicHeaderProps) {
       <div
         className={cn(
           'bg-background/98 fixed inset-0 z-40 backdrop-blur-2xl xl:pointer-events-none xl:hidden',
-          mobileOpen ? 'pointer-events-auto block' : 'pointer-events-none hidden'
+          mobileOpen
+            ? 'pointer-events-auto block'
+            : 'pointer-events-none hidden'
         )}
       >
         <div className='flex h-full flex-col justify-between px-8 pt-20 pb-10'>
@@ -440,11 +467,9 @@ export function PublicHeader(props: PublicHeaderProps) {
             })}
           </nav>
 
-          <div
-            className='flex flex-col gap-3'
-          >
-            {showAuthButtons && (
-              isAuthenticated ? (
+          <div className='flex flex-col gap-3'>
+            {showAuthButtons &&
+              (isAuthenticated ? (
                 <Link
                   to='/share/console'
                   onClick={() => setMobileOpen(false)}
@@ -469,8 +494,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                     {t('免费注册')}
                   </Link>
                 </div>
-              )
-            )}
+              ))}
           </div>
         </div>
       </div>
