@@ -60,10 +60,15 @@ function enhanceCmsHtml(html: string, path: string) {
       </section>
     `
     const existingPoweredBy = doc.querySelector('.home-logos, .kg-home-powered')
+    const heroMarquee = doc.querySelector('.home-hero-marquee')
     const promoWrap = doc.querySelector('.home-promo-wrap')
 
     if (existingPoweredBy) {
-      existingPoweredBy.outerHTML = poweredByMarkup
+      existingPoweredBy.remove()
+    }
+
+    if (heroMarquee) {
+      heroMarquee.insertAdjacentHTML('beforebegin', poweredByMarkup)
     } else if (promoWrap) {
       promoWrap.insertAdjacentHTML('afterend', poweredByMarkup)
     }
@@ -137,7 +142,7 @@ function getCmsOverrideStyles(path: string) {
 
       .kg-cms-home .kg-home-powered {
         max-width: 1120px;
-        margin: 0 auto clamp(28px, 4vw, 44px) !important;
+        margin: clamp(28px, 4vw, 44px) auto 0 !important;
         padding: 0 var(--kg-px);
         text-align: center;
       }
