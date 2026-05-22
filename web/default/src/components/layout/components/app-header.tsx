@@ -1,14 +1,14 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useRouterState } from '@tanstack/react-router'
 import { useNotifications } from '@/hooks/use-notifications'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { useTopNavLinks } from '@/hooks/use-top-nav-links'
+import { Skeleton } from '@/components/ui/skeleton'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { NotificationButton } from '@/components/notification-button'
 import { NotificationDialog } from '@/components/notification-dialog'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
-import { Skeleton } from '@/components/ui/skeleton'
 import { defaultTopNavLinks } from '../config/top-nav.config'
 import { type TopNavLink } from '../types'
 import { Header } from './header'
@@ -88,9 +88,16 @@ export function AppHeader({
   showConfigDrawer = true,
   showProfileDropdown = true,
 }: AppHeaderProps) {
-  // Prioritize dynamically generated links from backend
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  })
+  const isPublicShellRoute =
+    pathname === '/' || pathname === '/share' || pathname.startsWith('/share/')
+
+  // Only public share pages should inherit the CMS/public navigation set.
   const dynamicLinks = useTopNavLinks()
-  const links = dynamicLinks.length > 0 ? dynamicLinks : navLinks
+  const links =
+    isPublicShellRoute && dynamicLinks.length > 0 ? dynamicLinks : navLinks
   const { systemName, logo, loading, logoLoaded } = useSystemConfig()
 
   // Notifications hook
@@ -105,7 +112,7 @@ export function AppHeader({
           to='/'
           className='hidden min-w-0 shrink-0 items-center gap-2 md:flex'
         >
-          <div className='flex size-8 shrink-0 items-center justify-center rounded-xl border bg-muted/40'>
+          <div className='bg-muted/40 flex size-8 shrink-0 items-center justify-center rounded-xl border'>
             {loading ? (
               <Skeleton className='size-6 rounded-lg' />
             ) : (
@@ -128,7 +135,9 @@ export function AppHeader({
           </div>
         </Link>
 
-        <TopNav links={links} className='min-w-0 flex-1' />
+        {links.length > 0 ? (
+          <TopNav links={links} className='min-w-0 flex-1' />
+        ) : null}
       </div>
     ) : null)
 

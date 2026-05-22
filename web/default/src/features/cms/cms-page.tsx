@@ -51,14 +51,12 @@ function enhanceCmsHtml(html: string, path: string) {
       {
         title: '为什么选我们',
         eyebrow: 'Why KuaiGouAI',
-        desc:
-          '不是又一个爱跑路的API中转站。我们做的是让国内开发者用得稳、算得清、bug改得简单。',
+        desc: '不是又一个爱跑路的API中转站。我们做的是让国内开发者用得稳、算得清、bug改得简单。',
       },
       {
         title: '客户端接入',
         eyebrow: 'API Configurations',
-        desc:
-          '主流 AI 客户端的 base URL 配置教程。点击进入对应工具的步骤指南，2 分钟搞定。',
+        desc: '主流 AI 客户端的 base URL 配置教程。点击进入对应工具的步骤指南，2 分钟搞定。',
       },
       {
         title: '接口一览',
@@ -68,9 +66,9 @@ function enhanceCmsHtml(html: string, path: string) {
     ]
 
     sectionFallbacks.forEach(({ title, eyebrow, desc }) => {
-      const heading = Array.from(doc.querySelectorAll('.home-section-title')).find(
-        (el) => el.textContent?.includes(title)
-      )
+      const heading = Array.from(
+        doc.querySelectorAll('.home-section-title')
+      ).find((el) => el.textContent?.includes(title))
       const head = heading?.closest('.home-section-head')
 
       if (!head || !heading) return
@@ -96,7 +94,10 @@ function enhanceCmsHtml(html: string, path: string) {
     const divider = doc.querySelector('.page-hero-divider')
 
     if (hero && !divider) {
-      hero.insertAdjacentHTML('afterend', '<div class="page-hero-divider"></div>')
+      hero.insertAdjacentHTML(
+        'afterend',
+        '<div class="page-hero-divider"></div>'
+      )
     }
   }
 
@@ -109,36 +110,37 @@ function getCmsOverrideStyles(path: string) {
   if (isHomePage) {
     return `
       .kg-cms-home .home-hero {
-        padding-top: clamp(96px, 14vh, 156px) !important;
-        padding-bottom: clamp(52px, 7vw, 88px) !important;
+        padding-top: clamp(96px, 16vh, 200px) !important;
+        padding-bottom: clamp(88px, 12vw, 160px) !important;
+        isolation: isolate !important;
       }
 
       .kg-cms-home .home-hero::before {
         left: 50% !important;
-        top: 6% !important;
-        width: min(1040px, 84vw) !important;
-        height: min(1040px, 84vw) !important;
+        top: 10% !important;
+        width: 920px !important;
+        height: 920px !important;
         background:
           radial-gradient(
             circle at center,
-            rgba(59, 130, 246, 0.24) 0%,
-            rgba(99, 102, 241, 0.16) 28%,
-            rgba(245, 158, 11, 0.1) 52%,
-            rgba(255, 255, 255, 0) 74%
+            rgba(26, 86, 219, 0.22) 0%,
+            rgba(99, 102, 241, 0.12) 25%,
+            rgba(245, 158, 11, 0.06) 50%,
+            rgba(255, 255, 255, 0) 70%
           ) !important;
-        filter: blur(70px) !important;
+        filter: blur(64px) !important;
         opacity: 1 !important;
       }
 
       .kg-cms-home .home-hero::after {
-        width: min(820px, 72vw) !important;
-        height: min(820px, 72vw) !important;
-        border: 1px solid rgba(37, 99, 235, 0.12) !important;
+        width: 760px !important;
+        height: 760px !important;
+        border: 1px dashed rgba(26, 86, 219, 0.1) !important;
         box-shadow:
-          0 0 0 96px rgba(255, 255, 255, 0),
-          0 0 0 97px rgba(37, 99, 235, 0.08),
-          0 0 0 226px rgba(255, 255, 255, 0),
-          0 0 0 227px rgba(245, 158, 11, 0.06) !important;
+          0 0 0 80px rgba(255, 255, 255, 0),
+          0 0 0 81px rgba(26, 86, 219, 0.06),
+          0 0 0 200px rgba(255, 255, 255, 0),
+          0 0 0 201px rgba(245, 158, 11, 0.04) !important;
         opacity: 1 !important;
       }
 
@@ -200,6 +202,16 @@ function getCmsOverrideStyles(path: string) {
         background: none !important;
         line-height: 1.3 !important;
         letter-spacing: -0.005em !important;
+        text-rendering: optimizeLegibility !important;
+        -webkit-font-smoothing: antialiased !important;
+        -moz-osx-font-smoothing: grayscale !important;
+      }
+
+      .kg-cms-home .home-hero-title,
+      .kg-cms-home .home-hero-sub {
+        text-rendering: optimizeLegibility !important;
+        -webkit-font-smoothing: antialiased !important;
+        -moz-osx-font-smoothing: grayscale !important;
       }
 
       .kg-cms-home .home-stats {
@@ -408,7 +420,8 @@ function loadExternalScript(src: string, type?: string) {
     }
     scriptEl.setAttribute('data-kuaigou-cms-src', src)
     scriptEl.onload = () => resolve(scriptEl)
-    scriptEl.onerror = () => reject(new Error(`Failed to load CMS script: ${src}`))
+    scriptEl.onerror = () =>
+      reject(new Error(`Failed to load CMS script: ${src}`))
     document.body.appendChild(scriptEl)
   })
 }
@@ -428,8 +441,9 @@ export function CmsPage({ path }: CmsPageProps) {
 
     const previousTitle = document.title
     const previousDescription =
-      document.querySelector('meta[name="description"]')?.getAttribute('content') ??
-      ''
+      document
+        .querySelector('meta[name="description"]')
+        ?.getAttribute('content') ?? ''
 
     const styleEl = document.createElement('style')
     styleEl.setAttribute('data-kuaigou-cms', path)
@@ -456,7 +470,9 @@ export function CmsPage({ path }: CmsPageProps) {
 
     const bootCmsScripts = async () => {
       const scripts = data.scripts ?? []
-      const inlineScripts = scripts.filter((script) => !script.src && script.content)
+      const inlineScripts = scripts.filter(
+        (script) => !script.src && script.content
+      )
       const externalScripts = scripts.filter((script) => script.src)
       const hadAlpine = Boolean(
         (window as typeof window & { Alpine?: unknown }).Alpine
@@ -553,7 +569,9 @@ export function CmsPage({ path }: CmsPageProps) {
             isHomePage
               ? 'kg-cms-scope kg-cms-home min-h-screen'
               : `kg-cms-scope kg-cms-page min-h-screen ${
-                  path.startsWith('/share/playground') ? 'kg-cms-playground' : ''
+                  path.startsWith('/share/playground')
+                    ? 'kg-cms-playground'
+                    : ''
                 }`
           }
           dangerouslySetInnerHTML={{ __html: enhancedHtml }}
