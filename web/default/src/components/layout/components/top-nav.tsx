@@ -36,8 +36,8 @@ function isLinkActive(pathname: string, href: string) {
   if (href === '/') return pathname === '/'
 
   if (href === '/dashboard') {
-    return CONSOLE_ROUTE_PREFIXES.some((prefix) =>
-      pathname === prefix || pathname.startsWith(`${prefix}/`)
+    return CONSOLE_ROUTE_PREFIXES.some(
+      (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
     )
   }
 
@@ -71,7 +71,7 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
   return (
     <>
       {/* 移动端下拉菜单 */}
-      <div className='lg:hidden'>
+      <div className='sm:hidden'>
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button size='icon' variant='outline' className='size-7'>
@@ -80,14 +80,7 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent side='bottom' align='start'>
             {normalizedLinks.map(
-              ({
-                title,
-                href,
-                isActive,
-                disabled,
-                external,
-                openInNewTab,
-              }) => (
+              ({ title, href, isActive, disabled, external, openInNewTab }) => (
                 <DropdownMenuItem key={`${title}-${href}`} asChild>
                   {external ? (
                     <a
@@ -117,39 +110,39 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
       {/* 桌面端水平导航 */}
       <nav
         className={cn(
-          'hidden items-center space-x-4 lg:flex lg:space-x-4 xl:space-x-6',
+          'hidden min-w-0 items-center gap-3 overflow-x-auto sm:flex md:gap-4 lg:gap-5',
           className
         )}
         {...props}
       >
         {normalizedLinks.map(
           ({ title, href, isActive, disabled, external, openInNewTab }) =>
-          external ? (
-            <a
-              key={`${title}-${href}`}
-              href={href}
-              target={openInNewTab ? '_blank' : undefined}
-              rel={openInNewTab ? 'noopener noreferrer' : undefined}
-              className={cn(
-                'hover:text-primary text-sm font-medium transition-colors',
-                isActive ? 'text-foreground' : 'text-muted-foreground'
-              )}
-            >
-              {title}
-            </a>
-          ) : (
-            <Link
-              key={`${title}-${href}`}
-              to={href}
-              disabled={disabled}
-              className={cn(
-                'hover:text-primary text-sm font-medium transition-colors',
-                isActive ? 'text-foreground' : 'text-muted-foreground'
-              )}
-            >
-              {title}
-            </Link>
-          )
+            external ? (
+              <a
+                key={`${title}-${href}`}
+                href={href}
+                target={openInNewTab ? '_blank' : undefined}
+                rel={openInNewTab ? 'noopener noreferrer' : undefined}
+                className={cn(
+                  'hover:text-primary shrink-0 text-sm font-medium transition-colors',
+                  isActive ? 'text-foreground' : 'text-muted-foreground'
+                )}
+              >
+                {title}
+              </a>
+            ) : (
+              <Link
+                key={`${title}-${href}`}
+                to={href}
+                disabled={disabled}
+                className={cn(
+                  'hover:text-primary shrink-0 text-sm font-medium transition-colors',
+                  isActive ? 'text-foreground' : 'text-muted-foreground'
+                )}
+              >
+                {title}
+              </Link>
+            )
         )}
       </nav>
     </>
