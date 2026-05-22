@@ -60,18 +60,61 @@ function enhanceCmsHtml(html: string, path: string) {
       </section>
     `
     const existingPoweredBy = doc.querySelector('.home-logos, .kg-home-powered')
-    const heroMarquee = doc.querySelector('.home-hero-marquee')
     const promoWrap = doc.querySelector('.home-promo-wrap')
 
     if (existingPoweredBy) {
       existingPoweredBy.remove()
     }
 
-    if (heroMarquee) {
-      heroMarquee.insertAdjacentHTML('beforebegin', poweredByMarkup)
-    } else if (promoWrap) {
+    if (promoWrap) {
       promoWrap.insertAdjacentHTML('afterend', poweredByMarkup)
+    } else {
+      const hero = doc.querySelector('.home-hero')
+      hero?.insertAdjacentHTML('afterend', poweredByMarkup)
     }
+
+    const sectionFallbacks = [
+      {
+        title: '为什么选我们',
+        eyebrow: 'Why KuaiGouAI',
+        desc:
+          '不是又一个爱跑路的API中转站。我们做的是让国内开发者用得稳、算得清、bug改得简单。',
+      },
+      {
+        title: '客户端接入',
+        eyebrow: 'API Configurations',
+        desc:
+          '主流 AI 客户端的 base URL 配置教程。点击进入对应工具的步骤指南，2 分钟搞定。',
+      },
+      {
+        title: '接口一览',
+        eyebrow: 'API Endpoints',
+        desc: '兼容 OpenAI 和 Anthropic 标准协议。点击地址可一键全选复制。',
+      },
+    ]
+
+    sectionFallbacks.forEach(({ title, eyebrow, desc }) => {
+      const heading = Array.from(doc.querySelectorAll('.home-section-title')).find(
+        (el) => el.textContent?.includes(title)
+      )
+      const head = heading?.closest('.home-section-head')
+
+      if (!head || !heading) return
+
+      if (!head.querySelector('.home-section-eyebrow')) {
+        heading.insertAdjacentHTML(
+          'beforebegin',
+          `<div class="home-section-eyebrow">${eyebrow}</div>`
+        )
+      }
+
+      if (!head.querySelector('.home-section-desc')) {
+        heading.insertAdjacentHTML(
+          'afterend',
+          `<p class="home-section-desc">${desc}</p>`
+        )
+      }
+    })
   }
 
   if (!isHomePage) {
@@ -142,7 +185,7 @@ function getCmsOverrideStyles(path: string) {
 
       .kg-cms-home .kg-home-powered {
         max-width: 1120px;
-        margin: clamp(28px, 4vw, 44px) auto 0 !important;
+        margin: 0 auto clamp(30px, 4vw, 48px) !important;
         padding: 0 var(--kg-px);
         text-align: center;
       }
@@ -180,10 +223,36 @@ function getCmsOverrideStyles(path: string) {
 
       .kg-cms-home .home-section-head {
         margin-bottom: clamp(28px, 4vw, 44px) !important;
+        text-align: center !important;
       }
 
       .kg-cms-home .home-section-eyebrow {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        margin-bottom: 14px !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.16em !important;
+        text-transform: uppercase !important;
         color: rgba(71, 85, 105, 0.9) !important;
+      }
+
+      .kg-cms-home .home-section-title {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+
+      .kg-cms-home .home-section-desc {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        max-width: 680px !important;
+        margin: 0 auto !important;
+        color: rgba(71, 85, 105, 0.92) !important;
+        font-size: clamp(15px, 1.5vw, 17px) !important;
+        line-height: 1.75 !important;
       }
 
       :is(.dark, [data-theme='dark']) .kg-cms-home .home-hero::before {
@@ -223,6 +292,10 @@ function getCmsOverrideStyles(path: string) {
 
       :is(.dark, [data-theme='dark']) .kg-cms-home .home-section-eyebrow {
         color: rgba(148, 163, 184, 0.9) !important;
+      }
+
+      :is(.dark, [data-theme='dark']) .kg-cms-home .home-section-desc {
+        color: rgba(203, 213, 225, 0.88) !important;
       }
     `
   }
