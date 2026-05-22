@@ -1,4 +1,5 @@
 import { Link, useRouterState } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { useNotifications } from '@/hooks/use-notifications'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { useTopNavLinks } from '@/hooks/use-top-nav-links'
@@ -88,6 +89,7 @@ export function AppHeader({
   showConfigDrawer = true,
   showProfileDropdown = true,
 }: AppHeaderProps) {
+  const { t } = useTranslation()
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   })
@@ -96,8 +98,18 @@ export function AppHeader({
 
   // Only public share pages should inherit the CMS/public navigation set.
   const dynamicLinks = useTopNavLinks()
+  const consoleLinks: TopNavLink[] = [
+    { title: t('Overview'), href: '/dashboard' },
+    { title: t('Playground'), href: '/playground' },
+    { title: t('API Keys'), href: '/keys' },
+    { title: t('Wallet'), href: '/wallet' },
+  ]
   const links =
-    isPublicShellRoute && dynamicLinks.length > 0 ? dynamicLinks : navLinks
+    isPublicShellRoute && dynamicLinks.length > 0
+      ? dynamicLinks
+      : navLinks.length > 0
+        ? navLinks
+        : consoleLinks
   const { systemName, logo, loading, logoLoaded } = useSystemConfig()
 
   // Notifications hook
@@ -108,32 +120,34 @@ export function AppHeader({
     leftContent ||
     (showTopNav ? (
       <div className='flex min-w-0 flex-1 items-center gap-3 md:gap-4'>
-        <Link
-          to='/'
-          className='hidden min-w-0 shrink-0 items-center gap-2 md:flex'
-        >
-          <div className='bg-muted/40 flex size-8 shrink-0 items-center justify-center rounded-xl border'>
-            {loading ? (
-              <Skeleton className='size-6 rounded-lg' />
-            ) : (
-              <HeaderLogo
-                src={logo}
-                loading={loading}
-                logoLoaded={logoLoaded}
-                className='size-6 rounded-lg object-contain'
-              />
-            )}
-          </div>
-          <div className='hidden min-w-0 xl:block'>
-            {loading ? (
-              <Skeleton className='h-4 w-28' />
-            ) : (
-              <span className='block truncate text-sm font-semibold tracking-tight'>
-                {systemName}
-              </span>
-            )}
-          </div>
-        </Link>
+        {isPublicShellRoute ? (
+          <Link
+            to='/'
+            className='hidden min-w-0 shrink-0 items-center gap-2 md:flex'
+          >
+            <div className='bg-muted/40 flex size-8 shrink-0 items-center justify-center rounded-xl border'>
+              {loading ? (
+                <Skeleton className='size-6 rounded-lg' />
+              ) : (
+                <HeaderLogo
+                  src={logo}
+                  loading={loading}
+                  logoLoaded={logoLoaded}
+                  className='size-6 rounded-lg object-contain'
+                />
+              )}
+            </div>
+            <div className='hidden min-w-0 xl:block'>
+              {loading ? (
+                <Skeleton className='h-4 w-28' />
+              ) : (
+                <span className='block truncate text-sm font-semibold tracking-tight'>
+                  {systemName}
+                </span>
+              )}
+            </div>
+          </Link>
+        ) : null}
 
         {links.length > 0 ? (
           <TopNav links={links} className='min-w-0 flex-1' />

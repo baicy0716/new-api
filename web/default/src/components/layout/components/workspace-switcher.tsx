@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { ROLE } from '@/lib/roles'
 import { useStatus } from '@/hooks/use-status'
-import { useSystemConfig } from '@/hooks/use-system-config'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +21,8 @@ import {
 import { useWorkspace } from '../context/workspace-context'
 import { getWorkspaceByPath, WORKSPACE_IDS } from '../lib/workspace-registry'
 import { type Workspace } from '../types'
+
+const CMS_BRAND_LOGO_URL = 'https://i.imgur.com/7Tkqn1t.png'
 
 type WorkspaceSwitcherProps = {
   workspaces: Workspace[]
@@ -45,7 +46,6 @@ export function WorkspaceSwitcher({
   const { pathname } = useLocation()
   const { isMobile } = useSidebar()
   const { status } = useStatus()
-  const { logo } = useSystemConfig()
   const isSuperAdmin = useAuthStore(
     (state) => state.auth.user?.role === ROLE.SUPER_ADMIN
   )
@@ -130,14 +130,25 @@ export function WorkspaceSwitcher({
       ) : (
         <div className='flex aspect-square size-8 items-center justify-center overflow-hidden rounded-lg'>
           <img
-            src={logo}
-            alt={t('Logo')}
-            className='size-full rounded-lg object-cover'
+            src={CMS_BRAND_LOGO_URL}
+            alt='KuaiGouAI'
+            className='h-7 w-auto object-contain drop-shadow-[0_8px_12px_rgba(37,99,235,0.18)]'
           />
         </div>
       )}
       <div className='grid flex-1 text-start text-sm leading-tight group-data-[collapsible=icon]:hidden'>
-        <span className='truncate font-semibold'>{activeWorkspace.name}</span>
+        <span className='truncate font-semibold'>
+          {activeWorkspace.id === WORKSPACE_IDS.SYSTEM_SETTINGS ? (
+            activeWorkspace.name
+          ) : (
+            <>
+              KuaiGou
+              <span className='ml-px font-serif text-[0.98em] text-blue-500 italic dark:text-blue-300'>
+                AI
+              </span>
+            </>
+          )}
+        </span>
         <span className='truncate text-xs'>{activeWorkspace.plan}</span>
       </div>
       {canSwitchWorkspace && (
@@ -177,9 +188,9 @@ export function WorkspaceSwitcher({
                   {index === 0 ? (
                     <div className='flex size-6 items-center justify-center overflow-hidden rounded-sm border'>
                       <img
-                        src={logo}
-                        alt='Logo'
-                        className='size-full object-cover'
+                        src={CMS_BRAND_LOGO_URL}
+                        alt='KuaiGouAI'
+                        className='h-5 w-auto object-contain'
                       />
                     </div>
                   ) : (
@@ -187,7 +198,7 @@ export function WorkspaceSwitcher({
                       <workspace.logo className='size-4 shrink-0' />
                     </div>
                   )}
-                  {workspace.name}
+                  {index === 0 ? 'KuaiGouAI' : workspace.name}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -196,7 +207,7 @@ export function WorkspaceSwitcher({
           <SidebarMenuButton
             asChild
             size='lg'
-            className='cursor-default hover:bg-transparent hover:text-sidebar-foreground active:bg-transparent active:text-sidebar-foreground'
+            className='hover:text-sidebar-foreground active:text-sidebar-foreground cursor-default hover:bg-transparent active:bg-transparent'
           >
             <div>{workspaceButtonContent}</div>
           </SidebarMenuButton>
