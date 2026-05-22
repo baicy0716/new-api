@@ -185,17 +185,21 @@ function getCmsOverrideStyles(path: string) {
 
       .kg-cms-home .kg-home-powered {
         max-width: 1120px;
-        margin: 0 auto clamp(30px, 4vw, 48px) !important;
+        margin: clamp(18px, 3vw, 28px) auto clamp(42px, 5vw, 64px) !important;
         padding: 0 var(--kg-px);
+        position: relative !important;
+        z-index: 3 !important;
         text-align: center;
       }
 
       .kg-cms-home .kg-home-powered-label {
-        margin-bottom: 16px !important;
-        font-size: 12px !important;
-        font-weight: 600 !important;
-        letter-spacing: 0.22em !important;
-        color: rgba(15, 23, 42, 0.48) !important;
+        display: block !important;
+        margin-bottom: 18px !important;
+        font-size: clamp(13px, 1.5vw, 15px) !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.2em !important;
+        color: rgba(15, 23, 42, 0.72) !important;
+        line-height: 1.2 !important;
         text-transform: uppercase;
       }
 
@@ -204,13 +208,17 @@ function getCmsOverrideStyles(path: string) {
         flex-wrap: wrap;
         align-items: center;
         justify-content: center;
-        gap: clamp(18px, 3vw, 34px) !important;
+        gap: clamp(16px, 3vw, 34px) !important;
+        row-gap: 12px !important;
       }
 
       .kg-cms-home .kg-home-powered-row span {
-        font-size: clamp(17px, 1.5vw, 20px) !important;
-        font-weight: 600 !important;
-        color: rgba(15, 23, 42, 0.76) !important;
+        display: inline-block !important;
+        font-size: clamp(19px, 2vw, 24px) !important;
+        font-weight: 800 !important;
+        color: rgba(15, 23, 42, 0.9) !important;
+        line-height: 1.25 !important;
+        letter-spacing: 0 !important;
       }
 
       .kg-cms-home .home-stats {
@@ -283,11 +291,11 @@ function getCmsOverrideStyles(path: string) {
       }
 
       :is(.dark, [data-theme='dark']) .kg-cms-home .kg-home-powered-label {
-        color: rgba(226, 232, 240, 0.58) !important;
+        color: rgba(226, 232, 240, 0.72) !important;
       }
 
       :is(.dark, [data-theme='dark']) .kg-cms-home .kg-home-powered-row span {
-        color: rgba(226, 232, 240, 0.86) !important;
+        color: rgba(248, 250, 252, 0.94) !important;
       }
 
       :is(.dark, [data-theme='dark']) .kg-cms-home .home-section-eyebrow {
@@ -296,6 +304,53 @@ function getCmsOverrideStyles(path: string) {
 
       :is(.dark, [data-theme='dark']) .kg-cms-home .home-section-desc {
         color: rgba(203, 213, 225, 0.88) !important;
+      }
+
+      @media (max-width: 768px) {
+        .kg-cms-home .home-promo-wrap {
+          padding-bottom: 18px !important;
+        }
+
+        .kg-cms-home .kg-home-powered {
+          margin: 18px auto 44px !important;
+          padding-inline: 20px !important;
+        }
+
+        .kg-cms-home .kg-home-powered-label {
+          margin-bottom: 14px !important;
+          font-size: 13px !important;
+          color: rgba(15, 23, 42, 0.78) !important;
+        }
+
+        .kg-cms-home .kg-home-powered-row {
+          gap: 12px 18px !important;
+        }
+
+        .kg-cms-home .kg-home-powered-row span {
+          font-size: 20px !important;
+          color: rgba(15, 23, 42, 0.92) !important;
+        }
+
+        .kg-cms-home .home-section-head {
+          padding-inline: 22px !important;
+        }
+
+        .kg-cms-home .home-section-eyebrow {
+          font-size: 12px !important;
+          color: rgba(51, 65, 85, 0.94) !important;
+        }
+
+        .kg-cms-home .home-section-desc {
+          color: rgba(51, 65, 85, 0.94) !important;
+        }
+
+        :is(.dark, [data-theme='dark']) .kg-cms-home .kg-home-powered-label {
+          color: rgba(226, 232, 240, 0.76) !important;
+        }
+
+        :is(.dark, [data-theme='dark']) .kg-cms-home .kg-home-powered-row span {
+          color: rgba(248, 250, 252, 0.96) !important;
+        }
       }
     `
   }
