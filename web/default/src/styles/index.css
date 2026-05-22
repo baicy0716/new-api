@@ -414,11 +414,57 @@
   .kg-cms-scope {
     position: relative;
     z-index: 1;
+    --ink: #0a0f1f;
+    --ink-2: #1e293b;
+    --ink-3: #475569;
+    --ink-4: #64748b;
+    --ink-5: #94a3b8;
+    --paper: #ffffff;
+    --glass: rgba(255, 255, 255, 0.62);
+    --glass-strong: rgba(255, 255, 255, 0.88);
+    --glass-border: rgba(15, 23, 42, 0.08);
+    --brand: #1a56db;
+    --brand-deep: #1e3a8a;
+    --brand-soft: rgba(26, 86, 219, 0.08);
+    --accent: #f59e0b;
+    --accent-deep: #b45309;
+    --accent-soft: rgba(245, 158, 11, 0.1);
+    --danger: #dc2626;
+    --danger-soft: rgba(220, 38, 38, 0.08);
+    --success: #047857;
+    --rule: rgba(15, 23, 42, 0.08);
   }
 
   .kg-cms-home,
   .kg-cms-page {
     padding-top: 0.5rem;
+  }
+
+  .kg-cms-home .home-hero {
+    padding-top: clamp(92px, 13vh, 148px) !important;
+    padding-bottom: clamp(44px, 7vw, 74px) !important;
+  }
+
+  .kg-cms-home .home-hero-marquee {
+    margin-top: 42px !important;
+  }
+
+  .kg-cms-home .home-promo-wrap {
+    padding-top: clamp(12px, 2vw, 24px) !important;
+    padding-bottom: clamp(28px, 4vw, 44px) !important;
+  }
+
+  .kg-cms-home .home-logos {
+    margin-bottom: clamp(40px, 6vw, 72px) !important;
+  }
+
+  .kg-cms-home .home-hero::before {
+    opacity: 0.9 !important;
+    filter: blur(72px) !important;
+  }
+
+  .kg-cms-home .home-hero::after {
+    opacity: 0.92 !important;
   }
 
   .kg-cms-scope .page-hero-band {
@@ -504,6 +550,28 @@
     border-color: rgba(148, 163, 184, 0.22);
   }
 
+  :is(.dark, [data-theme='dark']) .kg-cms-scope {
+    --ink: #f1f5f9;
+    --ink-2: #e2e8f0;
+    --ink-3: #cbd5e1;
+    --ink-4: #94a3b8;
+    --ink-5: #64748b;
+    --paper: #0f172a;
+    --glass: rgba(15, 23, 42, 0.62);
+    --glass-strong: rgba(15, 23, 42, 0.88);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --brand: #60a5fa;
+    --brand-deep: #93c5fd;
+    --brand-soft: rgba(96, 165, 250, 0.14);
+    --accent: #fbbf24;
+    --accent-deep: #fde047;
+    --accent-soft: rgba(251, 191, 36, 0.16);
+    --danger: #f87171;
+    --danger-soft: rgba(248, 113, 113, 0.14);
+    --success: #34d399;
+    --rule: rgba(255, 255, 255, 0.1);
+  }
+
   .dark .kg-cms-scope .page-hero-divider {
     background: linear-gradient(
       90deg,
@@ -524,6 +592,57 @@
   .dark .kg-cms-home .home-logos-row,
   .dark .kg-cms-home .home-logos-label {
     color: rgba(226, 232, 240, 0.82);
+  }
+
+  :is(.dark, [data-theme='dark']) .kg-cms-home .home-hero::before {
+    background: radial-gradient(
+      circle at center,
+      rgba(96, 165, 250, 0.28) 0%,
+      rgba(129, 140, 248, 0.2) 26%,
+      rgba(251, 191, 36, 0.1) 52%,
+      transparent 74%
+    ) !important;
+    filter: blur(84px) !important;
+    opacity: 1 !important;
+  }
+
+  :is(.dark, [data-theme='dark']) .kg-cms-home .home-hero::after {
+    border-color: rgba(148, 163, 184, 0.24) !important;
+    box-shadow:
+      0 0 0 92px rgba(255, 255, 255, 0),
+      0 0 0 93px rgba(96, 165, 250, 0.12),
+      0 0 0 214px rgba(255, 255, 255, 0),
+      0 0 0 215px rgba(251, 191, 36, 0.07) !important;
+    opacity: 0.86 !important;
+  }
+
+  :is(.dark, [data-theme='dark']) .kg-cms-scope .hero h1,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope .hero .lead,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope .hero .eyebrow,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope .card,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope .card h3,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope .card .card-sub,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope label,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope label > .help,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope .top-nav .brand,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope .top-nav .links a,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope .stat-chip,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope .auth-bar .text,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope .notice,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope .footer,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope .footer a {
+    color: inherit;
+  }
+
+  :is(.dark, [data-theme='dark']) .kg-cms-scope .card,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope .size-chip,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope .qual-chip,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope textarea,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope input,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope .result-wrap,
+  :is(.dark, [data-theme='dark']) .kg-cms-scope details.history {
+    background-color: rgba(15, 23, 42, 0.72);
+    border-color: rgba(255, 255, 255, 0.08);
   }
 
   .dark .kg-cms-playground .page-hero-band {
