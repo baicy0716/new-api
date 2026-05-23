@@ -60,7 +60,7 @@ export function AppSidebar({ className }: AppSidebarProps) {
 
   return (
     <Sidebar collapsible={collapsible} variant={variant} className={className}>
-      <SidebarHeader className='pb-0'>
+      <SidebarHeader className='px-2 pt-1 pb-0'>
         <SystemBrand variant='sidebar' />
       </SidebarHeader>
       <SidebarContent className='py-2'>
