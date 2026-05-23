@@ -34,7 +34,11 @@ import { getNavGroupsForPath } from '../lib/workspace-registry'
 import { NavGroup } from './nav-group'
 import { SystemBrand } from './system-brand'
 
-export function AppSidebar() {
+type AppSidebarProps = {
+  className?: string
+}
+
+export function AppSidebar({ className }: AppSidebarProps) {
   const { t } = useTranslation()
   const { collapsible, variant } = useLayout()
   const { pathname } = useLocation()
@@ -55,7 +59,7 @@ export function AppSidebar() {
   }, [configFilteredNavGroups, userRole])
 
   return (
-    <Sidebar collapsible={collapsible} variant={variant}>
+    <Sidebar collapsible={collapsible} variant={variant} className={className}>
       <SidebarHeader className='pb-0'>
         <SystemBrand variant='sidebar' />
       </SidebarHeader>
