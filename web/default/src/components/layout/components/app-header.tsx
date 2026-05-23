@@ -124,7 +124,7 @@ export function AppHeader({
               'min-w-0',
               isPublicShellRoute
                 ? 'flex-1'
-                : 'max-w-full flex-none translate-y-1'
+                : 'max-w-full flex-none translate-y-[9px]'
             )}
             variant={isPublicShellRoute ? 'plain' : 'pill'}
           />
