@@ -122,9 +122,7 @@ export function AppHeader({
             links={links}
             className={cn(
               'min-w-0',
-              isPublicShellRoute
-                ? 'flex-1'
-                : 'max-w-full flex-none translate-y-[9px]'
+              isPublicShellRoute ? 'flex-1' : 'max-w-full flex-none'
             )}
             variant={isPublicShellRoute ? 'plain' : 'pill'}
           />
@@ -139,6 +137,7 @@ export function AppHeader({
           !isPublicShellRoute &&
             'border-border/60 bg-background/85 supports-[backdrop-filter]:bg-background/70 shadow-[0_10px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl dark:shadow-[0_10px_30px_rgba(0,0,0,0.18)]'
         )}
+        contentClassName={cn(!isPublicShellRoute && 'items-start pt-3.5')}
       >
         {leftSection}
         {rightContent ?? (

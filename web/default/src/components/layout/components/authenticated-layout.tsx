@@ -42,7 +42,7 @@ export function AuthenticatedLayout(props: AuthenticatedLayoutProps) {
             <SkipToMain />
             <div className='flex min-h-svh w-full'>
               <AppSidebar className='[--app-header-height:0px]' />
-              <div className='flex min-w-0 flex-1 flex-col'>
+              <div className='flex min-w-0 flex-1 flex-col [--app-header-height:4.5rem]'>
                 <AppHeader />
                 <SidebarInset
                   className={cn(
