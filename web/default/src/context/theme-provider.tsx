@@ -1,60 +1,42 @@
-import { createContext, useContext, useEffect, useState, useMemo } from 'react'
-import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
+/*
+Copyright (C) 2023-2026 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+import { getCookie, removeCookie, setCookie } from '@/lib/cookies'
 
 type Theme = 'dark' | 'light' | 'system'
 type ResolvedTheme = Exclude<Theme, 'system'>
 
 const DEFAULT_THEME = 'system'
 const THEME_COOKIE_NAME = 'vite-ui-theme'
-const THEME_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 // 1 year
+const THEME_COOKIE_MAX_AGE = 60 * 60 * 24 * 365
 const CMS_THEME_STORAGE_KEY = 'kg-theme'
+const THEMES = new Set<Theme>(['dark', 'light', 'system'])
 
 function isTheme(value: string | null | undefined): value is Theme {
   return value === 'dark' || value === 'light' || value === 'system'
-}
-
-function getStoredTheme(storageKey: string, defaultTheme: Theme): Theme {
-  const cookieTheme = getCookie(storageKey)
-  if (isTheme(cookieTheme)) {
-    return cookieTheme
-  }
-
-  if (typeof window === 'undefined') {
-    return defaultTheme
-  }
-
-  try {
-    const localTheme = window.localStorage.getItem(storageKey)
-    if (isTheme(localTheme)) {
-      return localTheme
-    }
-
-    const legacyCmsTheme = window.localStorage.getItem(CMS_THEME_STORAGE_KEY)
-    if (legacyCmsTheme === 'dark' || legacyCmsTheme === 'light') {
-      return legacyCmsTheme
-    }
-  } catch {
-    return defaultTheme
-  }
-
-  return defaultTheme
-}
-
-function syncThemeStorage(storageKey: string, theme: Theme): void {
-  if (typeof window === 'undefined') return
-
-  try {
-    window.localStorage.setItem(storageKey, theme)
-
-    if (theme === 'system') {
-      window.localStorage.removeItem(CMS_THEME_STORAGE_KEY)
-      return
-    }
-
-    window.localStorage.setItem(CMS_THEME_STORAGE_KEY, theme)
-  } catch {
-    // Ignore storage write failures and keep the DOM theme authoritative.
-  }
 }
 
 type ThemeProviderProps = {
@@ -81,6 +63,60 @@ const initialState: ThemeProviderState = {
 
 const ThemeContext = createContext<ThemeProviderState>(initialState)
 
+function getSystemTheme(): ResolvedTheme {
+  if (typeof window === 'undefined') return 'light'
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light'
+}
+
+function resolveTheme(theme: Theme): ResolvedTheme {
+  return theme === 'system' ? getSystemTheme() : theme
+}
+
+function getStoredTheme(storageKey: string, fallback: Theme): Theme {
+  const cookieTheme = getCookie(storageKey)
+  if (isTheme(cookieTheme)) {
+    return cookieTheme
+  }
+
+  if (typeof window === 'undefined') {
+    return fallback
+  }
+
+  try {
+    const localTheme = window.localStorage.getItem(storageKey)
+    if (isTheme(localTheme) && THEMES.has(localTheme)) {
+      return localTheme
+    }
+
+    const legacyCmsTheme = window.localStorage.getItem(CMS_THEME_STORAGE_KEY)
+    if (legacyCmsTheme === 'dark' || legacyCmsTheme === 'light') {
+      return legacyCmsTheme
+    }
+  } catch {
+    return fallback
+  }
+
+  return fallback
+}
+
+function syncThemeStorage(storageKey: string, theme: Theme) {
+  if (typeof window === 'undefined') return
+
+  try {
+    window.localStorage.setItem(storageKey, theme)
+
+    if (theme === 'system') {
+      window.localStorage.removeItem(CMS_THEME_STORAGE_KEY)
+    } else {
+      window.localStorage.setItem(CMS_THEME_STORAGE_KEY, theme)
+    }
+  } catch {
+    // Ignore storage failures and keep the DOM state authoritative.
+  }
+}
+
 export function ThemeProvider({
   children,
   defaultTheme = DEFAULT_THEME,
@@ -90,61 +126,54 @@ export function ThemeProvider({
   const [theme, _setTheme] = useState<Theme>(() =>
     getStoredTheme(storageKey, defaultTheme)
   )
-
-  // Optimized: Memoize the resolved theme calculation to prevent unnecessary re-computations
-  const resolvedTheme = useMemo((): ResolvedTheme => {
-    if (theme === 'system') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'dark'
-        : 'light'
-    }
-    return theme as ResolvedTheme
-  }, [theme])
+  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() =>
+    resolveTheme(getStoredTheme(storageKey, defaultTheme))
+  )
 
   useEffect(() => {
     const root = window.document.documentElement
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
 
-    const applyTheme = (currentResolvedTheme: ResolvedTheme) => {
-      root.classList.remove('light', 'dark') // Remove existing theme classes
-      root.classList.add(currentResolvedTheme) // Add the new theme class
-      root.setAttribute('data-theme', currentResolvedTheme)
+    const applyTheme = () => {
+      const nextResolvedTheme = resolveTheme(theme)
+      root.classList.remove('light', 'dark')
+      root.classList.add(nextResolvedTheme)
+      root.setAttribute('data-theme', nextResolvedTheme)
+      setResolvedTheme(nextResolvedTheme)
     }
 
-    const handleChange = () => {
-      if (theme === 'system') {
-        const systemTheme = mediaQuery.matches ? 'dark' : 'light'
-        applyTheme(systemTheme)
-      }
-    }
-
-    applyTheme(resolvedTheme)
+    applyTheme()
     syncThemeStorage(storageKey, theme)
+    mediaQuery.addEventListener('change', applyTheme)
 
-    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', applyTheme)
+  }, [storageKey, theme])
 
-    return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [storageKey, theme, resolvedTheme])
+  const setTheme = useCallback(
+    (nextTheme: Theme) => {
+      setCookie(storageKey, nextTheme, THEME_COOKIE_MAX_AGE)
+      syncThemeStorage(storageKey, nextTheme)
+      _setTheme(nextTheme)
+    },
+    [storageKey]
+  )
 
-  const setTheme = (theme: Theme) => {
-    setCookie(storageKey, theme, THEME_COOKIE_MAX_AGE)
-    syncThemeStorage(storageKey, theme)
-    _setTheme(theme)
-  }
-
-  const resetTheme = () => {
+  const resetTheme = useCallback(() => {
     removeCookie(storageKey)
-    syncThemeStorage(storageKey, DEFAULT_THEME)
-    _setTheme(DEFAULT_THEME)
-  }
+    syncThemeStorage(storageKey, defaultTheme)
+    _setTheme(defaultTheme)
+  }, [defaultTheme, storageKey])
 
-  const contextValue = {
-    defaultTheme,
-    resolvedTheme,
-    resetTheme,
-    theme,
-    setTheme,
-  }
+  const contextValue = useMemo(
+    () => ({
+      defaultTheme,
+      resolvedTheme,
+      resetTheme,
+      theme,
+      setTheme,
+    }),
+    [defaultTheme, resolvedTheme, resetTheme, theme, setTheme]
+  )
 
   return (
     <ThemeContext value={contextValue} {...props}>
@@ -153,7 +182,6 @@ export function ThemeProvider({
   )
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useTheme = () => {
   const context = useContext(ThemeContext)
 

@@ -1,3 +1,21 @@
+/*
+Copyright (C) 2023-2026 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
 import { useEffect, useState } from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
 import { ChevronDown } from 'lucide-react'
@@ -42,7 +60,7 @@ function ExternalHeaderLink({
 }: {
   link: TopNavLink
   className?: string
-  children: React.ReactNode
+  children?: React.ReactNode
   onClick?: () => void
 }) {
   return (
@@ -142,8 +160,7 @@ export function PublicHeader(props: PublicHeaderProps) {
   const routerState = useRouterState()
   const pathname = routerState.location.pathname
 
-  const user = auth.user
-  const isAuthenticated = !!user
+  const isAuthenticated = !!auth.user
   const displaySiteName = customSiteName || systemName
   const links = dynamicLinks.length > 0 ? dynamicLinks : navLinks
   const isCmsVariant = variant === 'cms'
@@ -198,7 +215,6 @@ export function PublicHeader(props: PublicHeaderProps) {
                 : 'bg-background/88 ring-border/60 h-14 rounded-2xl px-4 shadow-sm ring-[0.5px] backdrop-blur-xl'
             )}
           >
-            {/* Logo */}
             <Link
               to={homeUrl}
               className='kg-shell-brand flex shrink-0 items-center gap-2.5'
@@ -239,7 +255,6 @@ export function PublicHeader(props: PublicHeaderProps) {
               )}
             </Link>
 
-            {/* Desktop nav */}
             <div className='hidden min-w-0 flex-1 items-center xl:flex'>
               <div className='kg-shell-links flex min-w-0 flex-1 items-center'>
                 {primaryLinks.map((link, i) => {
@@ -263,24 +278,26 @@ export function PublicHeader(props: PublicHeaderProps) {
 
                 {overflowLinks.length > 0 && (
                   <DropdownMenu modal={false}>
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        className={cn(
-                          'kg-shell-link kg-shell-more-trigger inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap',
-                          hasActiveOverflowLink
-                            ? 'kg-shell-link-active text-foreground'
-                            : 'text-muted-foreground hover:text-foreground'
-                        )}
-                      >
-                        <span>{t('更多')}</span>
-                        {hasOverflowIndicator ? (
-                          <span
-                            aria-hidden='true'
-                            className='kg-shell-link-dot inline-block size-1.5 rounded-full'
-                          />
-                        ) : null}
-                        <ChevronDown className='size-3.5 opacity-70' />
-                      </button>
+                    <DropdownMenuTrigger
+                      render={
+                        <button
+                          className={cn(
+                            'kg-shell-link kg-shell-more-trigger inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap',
+                            hasActiveOverflowLink
+                              ? 'kg-shell-link-active text-foreground'
+                              : 'text-muted-foreground hover:text-foreground'
+                          )}
+                        />
+                      }
+                    >
+                      <span>{t('更多')}</span>
+                      {hasOverflowIndicator ? (
+                        <span
+                          aria-hidden='true'
+                          className='kg-shell-link-dot inline-block size-1.5 rounded-full'
+                        />
+                      ) : null}
+                      <ChevronDown className='size-3.5 opacity-70' />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align='center'
@@ -299,26 +316,32 @@ export function PublicHeader(props: PublicHeaderProps) {
 
                         if (link.external) {
                           return (
-                            <DropdownMenuItem key={i} asChild>
-                              <ExternalHeaderLink
-                                link={link}
-                                className={itemClassName}
-                              >
-                                <NavLinkLabel
-                                  link={{ ...link, title: t(link.title) }}
+                            <DropdownMenuItem
+                              key={i}
+                              render={
+                                <ExternalHeaderLink
+                                  link={link}
+                                  className={itemClassName}
                                 />
-                              </ExternalHeaderLink>
+                              }
+                            >
+                              <NavLinkLabel
+                                link={{ ...link, title: t(link.title) }}
+                              />
                             </DropdownMenuItem>
                           )
                         }
 
                         return (
-                          <DropdownMenuItem key={i} asChild>
-                            <Link to={link.href} className={itemClassName}>
-                              <NavLinkLabel
-                                link={{ ...link, title: t(link.title) }}
-                              />
-                            </Link>
+                          <DropdownMenuItem
+                            key={i}
+                            render={
+                              <Link to={link.href} className={itemClassName} />
+                            }
+                          >
+                            <NavLinkLabel
+                              link={{ ...link, title: t(link.title) }}
+                            />
                           </DropdownMenuItem>
                         )
                       })}
@@ -353,9 +376,9 @@ export function PublicHeader(props: PublicHeaderProps) {
                         <Button
                           size='sm'
                           className='kg-shell-btn kg-shell-btn-primary h-8 rounded-lg px-3.5 text-xs font-medium'
-                          asChild
+                          render={<Link to='/share/console' />}
                         >
-                          <Link to='/share/console'>{t('控制中心')}</Link>
+                          {t('控制中心')}
                         </Button>
                         <ProfileDropdown />
                       </div>
@@ -365,16 +388,16 @@ export function PublicHeader(props: PublicHeaderProps) {
                           size='sm'
                           variant='ghost'
                           className='kg-shell-btn kg-shell-btn-ghost h-8 rounded-lg px-3.5 text-xs font-medium'
-                          asChild
+                          render={<Link to='/share/login' />}
                         >
-                          <Link to='/share/login'>{t('登录')}</Link>
+                          {t('登录')}
                         </Button>
                         <Button
                           size='sm'
                           className='kg-shell-btn kg-shell-btn-primary h-8 rounded-lg px-3.5 text-xs font-medium'
-                          asChild
+                          render={<Link to='/share/register' />}
                         >
-                          <Link to='/share/register'>{t('免费注册')}</Link>
+                          {t('免费注册')}
                         </Button>
                       </div>
                     )}
@@ -383,16 +406,16 @@ export function PublicHeader(props: PublicHeaderProps) {
               </div>
             </div>
 
-            {/* Mobile: compact actions + hamburger */}
             <div className='flex items-center gap-2 xl:hidden'>
               {showThemeSwitch && <ThemeSwitch />}
               {showAuthButtons && !loading && isAuthenticated && (
-                <>
-                  <ProfileDropdown />
-                </>
+                <ProfileDropdown />
               )}
-              <button
-                className='hover:bg-muted/40 flex size-9 items-center justify-center rounded-lg'
+              <Button
+                type='button'
+                variant='ghost'
+                size='icon'
+                className='size-9'
                 onClick={() => setMobileOpen((v) => !v)}
                 aria-label={t('Toggle navigation menu')}
               >
@@ -416,13 +439,12 @@ export function PublicHeader(props: PublicHeaderProps) {
                     )}
                   />
                 </div>
-              </button>
+              </Button>
             </div>
           </nav>
         </div>
       </header>
 
-      {/* Mobile full-screen overlay */}
       <div
         className={cn(
           'bg-background/98 fixed inset-0 z-40 backdrop-blur-2xl xl:pointer-events-none xl:hidden',
@@ -499,7 +521,6 @@ export function PublicHeader(props: PublicHeaderProps) {
         </div>
       </div>
 
-      {/* Notification Dialog */}
       {showNotifications && (
         <NotificationDialog
           open={notifications.dialogOpen}

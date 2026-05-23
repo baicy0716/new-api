@@ -1,3 +1,21 @@
+/*
+Copyright (C) 2023-2026 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
 import { Link, useRouterState } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
@@ -17,66 +35,14 @@ import { Header } from './header'
 import { HeaderLogo } from './header-logo'
 import { TopNav } from './top-nav'
 
-/**
- * General application Header component
- * Integrates navigation bar, search, configuration and profile functions
- *
- * @example
- * // Basic usage
- * <AppHeader />
- *
- * @example
- * // Custom navigation links
- * <AppHeader navLinks={customLinks} />
- *
- * @example
- * // Hide navigation bar and search box
- * <AppHeader showTopNav={false} showSearch={false} />
- *
- * @example
- * // Fully customize left and right content
- * <AppHeader
- *   leftContent={<CustomLeft />}
- *   rightContent={<CustomRight />}
- * />
- */
 type AppHeaderProps = {
-  /**
-   * Custom navigation links, uses default global navigation or dynamically generated from backend if not provided
-   */
   navLinks?: TopNavLink[]
-  /**
-   * Whether to show top navigation bar
-   * @default true
-   */
   showTopNav?: boolean
-  /**
-   * Left content, overrides TopNav if provided
-   */
   leftContent?: React.ReactNode
-  /**
-   * Whether to show search box
-   * @default true
-   */
   showSearch?: boolean
-  /**
-   * Custom right content, overrides default right content if provided
-   */
   rightContent?: React.ReactNode
-  /**
-   * Whether to show notification button
-   * @default true
-   */
   showNotifications?: boolean
-  /**
-   * Whether to show config drawer
-   * @default true
-   */
   showConfigDrawer?: boolean
-  /**
-   * Whether to show profile dropdown
-   * @default true
-   */
   showProfileDropdown?: boolean
 }
 
@@ -97,7 +63,6 @@ export function AppHeader({
   const isPublicShellRoute =
     pathname === '/' || pathname === '/share' || pathname.startsWith('/share/')
 
-  // Only public share pages should inherit the CMS/public navigation set.
   const dynamicLinks = useTopNavLinks()
   const consoleLinks: TopNavLink[] = [
     { title: t('Overview'), href: '/dashboard/overview' },
@@ -112,11 +77,8 @@ export function AppHeader({
         ? navLinks
         : consoleLinks
   const { systemName, logo, loading, logoLoaded } = useSystemConfig()
-
-  // Notifications hook
   const notifications = useNotifications()
 
-  // Determine left content: custom content > navigation bar > null
   const leftSection =
     leftContent ||
     (showTopNav ? (
@@ -128,7 +90,7 @@ export function AppHeader({
       >
         {isPublicShellRoute ? (
           <Link
-            to='/'
+            to='/share'
             className='hidden min-w-0 shrink-0 items-center gap-2 md:flex'
           >
             <div className='bg-muted/40 flex size-8 shrink-0 items-center justify-center rounded-xl border'>
@@ -173,7 +135,7 @@ export function AppHeader({
       <Header>
         {leftSection}
         {rightContent ?? (
-          <div className='ms-auto flex shrink-0 items-center space-x-4'>
+          <div className='ms-auto flex shrink-0 items-center gap-2 sm:gap-3'>
             {showSearch && <Search />}
             {showNotifications && (
               <NotificationButton
@@ -188,7 +150,6 @@ export function AppHeader({
         )}
       </Header>
 
-      {/* Notification Dialog */}
       {showNotifications && (
         <NotificationDialog
           open={notifications.dialogOpen}
