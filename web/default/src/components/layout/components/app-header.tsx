@@ -122,7 +122,9 @@ export function AppHeader({
             links={links}
             className={cn(
               'min-w-0',
-              isPublicShellRoute ? 'flex-1' : 'max-w-full flex-none'
+              isPublicShellRoute
+                ? 'flex-1'
+                : 'max-w-full flex-none translate-y-1'
             )}
             variant={isPublicShellRoute ? 'plain' : 'pill'}
           />
