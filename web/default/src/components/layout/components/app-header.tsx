@@ -132,7 +132,12 @@ export function AppHeader({
 
   return (
     <>
-      <Header>
+      <Header
+        className={cn(
+          !isPublicShellRoute &&
+            'border-border/60 bg-background/85 supports-[backdrop-filter]:bg-background/70 shadow-[0_10px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl dark:shadow-[0_10px_30px_rgba(0,0,0,0.18)]'
+        )}
+      >
         {leftSection}
         {rightContent ?? (
           <div className='ms-auto flex shrink-0 items-center gap-2 sm:gap-3'>
