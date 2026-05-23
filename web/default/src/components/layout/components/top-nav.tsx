@@ -13,6 +13,7 @@ import { type TopNavLink } from '../types'
 
 type TopNavProps = React.HTMLAttributes<HTMLElement> & {
   links: TopNavLink[]
+  variant?: 'plain' | 'pill'
 }
 
 const CONSOLE_ROUTE_PREFIXES = [
@@ -48,7 +49,12 @@ function isLinkActive(pathname: string, href: string) {
  * 顶部导航栏组件
  * 在大屏幕显示水平导航，在小屏幕显示下拉菜单
  */
-export function TopNav({ className, links, ...props }: TopNavProps) {
+export function TopNav({
+  className,
+  links,
+  variant = 'plain',
+  ...props
+}: TopNavProps) {
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   })
@@ -74,7 +80,15 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
       <div className='sm:hidden'>
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <Button size='icon' variant='outline' className='size-7'>
+            <Button
+              size='icon'
+              variant='outline'
+              className={cn(
+                'size-7',
+                variant === 'pill' &&
+                  'border-border/70 bg-background/80 rounded-full shadow-sm backdrop-blur'
+              )}
+            >
               <Menu />
             </Button>
           </DropdownMenuTrigger>
@@ -110,7 +124,10 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
       {/* 桌面端水平导航 */}
       <nav
         className={cn(
-          'hidden min-w-0 items-center gap-3 overflow-x-auto sm:flex md:gap-4 lg:gap-5',
+          'hidden min-w-0 items-center overflow-x-auto sm:flex',
+          variant === 'pill'
+            ? 'bg-background/78 border-border/70 rounded-full border px-2 py-1 shadow-[0_12px_24px_-20px_rgba(15,23,42,0.38)] backdrop-blur-xl'
+            : 'gap-3 md:gap-4 lg:gap-5',
           className
         )}
         {...props}
@@ -124,7 +141,10 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
                 target={openInNewTab ? '_blank' : undefined}
                 rel={openInNewTab ? 'noopener noreferrer' : undefined}
                 className={cn(
-                  'hover:text-primary shrink-0 text-sm font-medium transition-colors',
+                  'shrink-0 text-sm font-medium transition-colors',
+                  variant === 'pill'
+                    ? 'hover:bg-foreground/[0.06] rounded-full px-3 py-1.5'
+                    : 'hover:text-primary',
                   isActive ? 'text-foreground' : 'text-muted-foreground'
                 )}
               >
@@ -136,7 +156,13 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
                 to={href}
                 disabled={disabled}
                 className={cn(
-                  'hover:text-primary shrink-0 text-sm font-medium transition-colors',
+                  'shrink-0 text-sm font-medium transition-colors',
+                  variant === 'pill'
+                    ? 'hover:bg-foreground/[0.06] rounded-full px-3 py-1.5'
+                    : 'hover:text-primary',
+                  variant === 'pill' &&
+                    isActive &&
+                    'bg-foreground/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]',
                   isActive ? 'text-foreground' : 'text-muted-foreground'
                 )}
               >

@@ -1,5 +1,6 @@
 import { Link, useRouterState } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
 import { useNotifications } from '@/hooks/use-notifications'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { useTopNavLinks } from '@/hooks/use-top-nav-links'
@@ -99,7 +100,7 @@ export function AppHeader({
   // Only public share pages should inherit the CMS/public navigation set.
   const dynamicLinks = useTopNavLinks()
   const consoleLinks: TopNavLink[] = [
-    { title: t('Overview'), href: '/dashboard' },
+    { title: t('Overview'), href: '/dashboard/overview' },
     { title: t('Playground'), href: '/playground' },
     { title: t('API Keys'), href: '/keys' },
     { title: t('Wallet'), href: '/wallet' },
@@ -119,7 +120,12 @@ export function AppHeader({
   const leftSection =
     leftContent ||
     (showTopNav ? (
-      <div className='flex min-w-0 flex-1 items-center gap-3 md:gap-4'>
+      <div
+        className={cn(
+          'flex min-w-0 flex-1 items-center gap-3 md:gap-4',
+          !isPublicShellRoute && 'justify-center'
+        )}
+      >
         {isPublicShellRoute ? (
           <Link
             to='/'
@@ -150,7 +156,14 @@ export function AppHeader({
         ) : null}
 
         {links.length > 0 ? (
-          <TopNav links={links} className='min-w-0 flex-1' />
+          <TopNav
+            links={links}
+            className={cn(
+              'min-w-0',
+              isPublicShellRoute ? 'flex-1' : 'max-w-full flex-none'
+            )}
+            variant={isPublicShellRoute ? 'plain' : 'pill'}
+          />
         ) : null}
       </div>
     ) : null)
