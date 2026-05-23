@@ -124,19 +124,19 @@ export function WorkspaceSwitcher({
   const workspaceButtonContent = (
     <>
       {activeWorkspace.id === WORKSPACE_IDS.SYSTEM_SETTINGS ? (
-        <div className='bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg'>
-          <activeWorkspace.logo className='size-4' />
+        <div className='bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-10 items-center justify-center rounded-xl'>
+          <activeWorkspace.logo className='size-5' />
         </div>
       ) : (
-        <div className='flex aspect-square size-8 items-center justify-center overflow-hidden rounded-lg'>
+        <div className='flex aspect-square size-10 items-center justify-center overflow-hidden rounded-xl'>
           <img
             src={CMS_BRAND_LOGO_URL}
             alt='KuaiGouAI'
-            className='h-7 w-auto object-contain drop-shadow-[0_8px_12px_rgba(37,99,235,0.18)]'
+            className='h-8 w-auto object-contain drop-shadow-[0_10px_16px_rgba(37,99,235,0.2)]'
           />
         </div>
       )}
-      <div className='grid flex-1 text-start text-sm leading-tight group-data-[collapsible=icon]:hidden'>
+      <div className='flex flex-1 items-center text-start text-sm leading-tight group-data-[collapsible=icon]:hidden'>
         <span className='truncate font-semibold'>
           {activeWorkspace.id === WORKSPACE_IDS.SYSTEM_SETTINGS ? (
             activeWorkspace.name
@@ -149,7 +149,6 @@ export function WorkspaceSwitcher({
             </>
           )}
         </span>
-        <span className='truncate text-xs'>{activeWorkspace.plan}</span>
       </div>
       {canSwitchWorkspace && (
         <ChevronsUpDown className='ms-auto group-data-[collapsible=icon]:hidden' />
