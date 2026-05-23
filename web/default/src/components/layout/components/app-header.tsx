@@ -106,7 +106,7 @@ export function AppHeader({
     { title: t('Wallet'), href: '/wallet' },
   ]
   const links =
-    isPublicShellRoute && dynamicLinks.length > 0
+    dynamicLinks.length > 0
       ? dynamicLinks
       : navLinks.length > 0
         ? navLinks
