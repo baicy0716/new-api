@@ -44,7 +44,6 @@ export function SignIn() {
               >
                 {t('Sign up')}
               </Link>
-              .
             </p>
           )}
         </div>

@@ -43,7 +43,6 @@ export function ForgotPassword() {
             >
               {t('Sign up')}
             </Link>
-            .
           </p>
         </div>
 
