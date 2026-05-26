@@ -39,6 +39,9 @@ interface FooterProps {
   columns?: FooterColumnProps[]
   copyright?: string
   className?: string
+  /** mini = 单行紧凑（用于 auth / 短表单页，避免抢占注意力）；
+   *  默认 = 完整多列（用于 marketing / CMS / dashboard）。 */
+  variant?: 'default' | 'mini'
 }
 
 function FooterLinkItem(props: { link: FooterLink }) {
@@ -156,6 +159,30 @@ export function Footer(props: FooterProps) {
   const displayName = systemName || props.name || 'New API'
   const isDemoSiteMode = Boolean(demoSiteEnabled)
   const currentYear = new Date().getFullYear()
+
+  // ── Mini variant：用于 auth / 短表单页。单行布局，不堆叠 brand block。──
+  // 用户在登录注册页核心任务是填表，footer 应该最低存在感但仍有品牌信息。
+  if (props.variant === 'mini') {
+    return (
+      <footer
+        className={cn(
+          'border-border/40 relative z-10 border-t',
+          props.className
+        )}
+      >
+        <div className='mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 py-4 text-xs text-muted-foreground/50 sm:flex-row'>
+          <div className='flex flex-wrap items-center justify-center gap-x-2 gap-y-1 sm:justify-start'>
+            <span className='font-medium text-muted-foreground/70'>{displayName}</span>
+            <span aria-hidden='true' className='text-muted-foreground/30'>·</span>
+            <span>{t('Powerful API Management Platform')}</span>
+            <span aria-hidden='true' className='text-muted-foreground/30'>·</span>
+            <span>&copy; {currentYear}</span>
+          </div>
+          <ProjectAttribution />
+        </div>
+      </footer>
+    )
+  }
 
   const fallbackColumns = useMemo<FooterColumnProps[]>(
     () => [
