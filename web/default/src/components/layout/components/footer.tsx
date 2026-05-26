@@ -228,39 +228,9 @@ export function Footer(props: FooterProps) {
   // 任何用 <Footer /> 的页面（auth / console / cms-page fallback）都拿同一份
   // CMS footer，全站视觉统一。fetch 失败或加载中走下面的 React fallback。
   const { data: cmsData } = useCmsFooter()
-  if (cmsData?.footerHtml && props.variant !== 'mini') {
-    return (
-      <div className='kg-cms-footer-host'>
-        <style dangerouslySetInnerHTML={{ __html: CMS_FOOTER_STYLES }} />
-        <div dangerouslySetInnerHTML={{ __html: cmsData.footerHtml }} />
-      </div>
-    )
-  }
 
-  // ── Mini variant：用于 auth / 短表单页。单行布局，不堆叠 brand block。──
-  // 用户在登录注册页核心任务是填表，footer 应该最低存在感但仍有品牌信息。
-  if (props.variant === 'mini') {
-    return (
-      <footer
-        className={cn(
-          'border-border/40 relative z-10 border-t',
-          props.className
-        )}
-      >
-        <div className='mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 py-4 text-xs text-muted-foreground/50 sm:flex-row'>
-          <div className='flex flex-wrap items-center justify-center gap-x-2 gap-y-1 sm:justify-start'>
-            <span className='font-medium text-muted-foreground/70'>{displayName}</span>
-            <span aria-hidden='true' className='text-muted-foreground/30'>·</span>
-            <span>{t('Powerful API Management Platform')}</span>
-            <span aria-hidden='true' className='text-muted-foreground/30'>·</span>
-            <span>&copy; {currentYear}</span>
-          </div>
-          <ProjectAttribution />
-        </div>
-      </footer>
-    )
-  }
-
+  // fallbackColumns 必须在 early-return 之前调用 useMemo，否则后续条件分支
+  // 跳过这个 hook 时会触发 React error 300（hooks 顺序变化）。
   const fallbackColumns = useMemo<FooterColumnProps[]>(
     () => [
       {
@@ -317,6 +287,39 @@ export function Footer(props: FooterProps) {
     ],
     [t]
   )
+
+  if (cmsData?.footerHtml && props.variant !== 'mini') {
+    return (
+      <div className='kg-cms-footer-host'>
+        <style dangerouslySetInnerHTML={{ __html: CMS_FOOTER_STYLES }} />
+        <div dangerouslySetInnerHTML={{ __html: cmsData.footerHtml }} />
+      </div>
+    )
+  }
+
+  // ── Mini variant：用于 auth / 短表单页。单行布局，不堆叠 brand block。──
+  // 用户在登录注册页核心任务是填表，footer 应该最低存在感但仍有品牌信息。
+  if (props.variant === 'mini') {
+    return (
+      <footer
+        className={cn(
+          'border-border/40 relative z-10 border-t',
+          props.className
+        )}
+      >
+        <div className='mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 py-4 text-xs text-muted-foreground/50 sm:flex-row'>
+          <div className='flex flex-wrap items-center justify-center gap-x-2 gap-y-1 sm:justify-start'>
+            <span className='font-medium text-muted-foreground/70'>{displayName}</span>
+            <span aria-hidden='true' className='text-muted-foreground/30'>·</span>
+            <span>{t('Powerful API Management Platform')}</span>
+            <span aria-hidden='true' className='text-muted-foreground/30'>·</span>
+            <span>&copy; {currentYear}</span>
+          </div>
+          <ProjectAttribution />
+        </div>
+      </footer>
+    )
+  }
 
   const displayColumns = props.columns ?? fallbackColumns
 
