@@ -19,9 +19,11 @@ For commercial licensing, please contact support@quantumnous.com
 import { Fragment, useMemo } from 'react'
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { useStatus } from '@/hooks/use-status'
+import { getCmsPage } from '@/features/cms/api'
 
 interface FooterLink {
   text: string
@@ -146,6 +148,68 @@ function ProjectAttribution(props: { inline?: boolean }) {
   )
 }
 
+// ── CSS for CMS-driven footer ────────────────────────────────────────────────
+// 跟 smart-router cms_layout.html 的 .footer* 样式对齐，scoped 在 wrapper 内
+// 防止泄漏到 React layout 其他地方。颜色直接用 CMS 实际值（不依赖外部 var
+// 是否定义），dark mode 用 .dark / [data-theme="dark"] 双 selector 同时覆盖
+// staging React 壳和生产 smart-router。
+const CMS_FOOTER_STYLES = `
+.kg-cms-footer-host .footer {
+  margin-top: 0;
+  padding: 32px 24px 24px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  color: #6B7280;
+  font-size: 13px;
+  background: transparent;
+}
+.kg-cms-footer-host .footer-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 16px;
+}
+.kg-cms-footer-host .footer-links a {
+  color: #4B5563;
+  margin-right: 22px; font-size: 13px;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.kg-cms-footer-host .footer-links a:hover { color: #0A0F1F; }
+.kg-cms-footer-host .footer-copy {
+  font-size: 12.5px;
+  color: #9CA3AF;
+  letter-spacing: -0.005em;
+}
+.kg-cms-footer-host .footer-copy .kg-em {
+  font-style: italic; font-weight: 500;
+  color: #6B7280;
+}
+@media (max-width: 600px) {
+  .kg-cms-footer-host .footer-inner { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .kg-cms-footer-host .footer-links a { margin-right: 14px; }
+}
+:is(.dark, [data-theme="dark"]) .kg-cms-footer-host .footer {
+  border-top-color: rgba(255, 255, 255, 0.10);
+  color: #94A3B8;
+}
+:is(.dark, [data-theme="dark"]) .kg-cms-footer-host .footer-links a { color: #CBD5E1; }
+:is(.dark, [data-theme="dark"]) .kg-cms-footer-host .footer-links a:hover { color: #F1F5F9; }
+:is(.dark, [data-theme="dark"]) .kg-cms-footer-host .footer-copy { color: #64748B; }
+:is(.dark, [data-theme="dark"]) .kg-cms-footer-host .footer-copy .kg-em { color: #94A3B8; }
+`
+
+// 全站共享一份 CMS footer fetch（react-query 自带去重 + 缓存）
+// staleTime 30 分钟：footer 变化频率低，admin 改了 fragment 后下次 SPA 路由
+// 切换或 30min 后自动刷新。
+function useCmsFooter() {
+  return useQuery({
+    queryKey: ['cms-site-footer'],
+    queryFn: () => getCmsPage('/share/'),
+    staleTime: 30 * 60_000,
+    gcTime: 60 * 60_000,
+    retry: 1,
+  })
+}
+
 export function Footer(props: FooterProps) {
   const { t } = useTranslation()
   const {
@@ -159,6 +223,19 @@ export function Footer(props: FooterProps) {
   const displayName = systemName || props.name || 'New API'
   const isDemoSiteMode = Boolean(demoSiteEnabled)
   const currentYear = new Date().getFullYear()
+
+  // ── Primary：从 CMS 取 footer HTML（route admin fragments 可编辑）──
+  // 任何用 <Footer /> 的页面（auth / console / cms-page fallback）都拿同一份
+  // CMS footer，全站视觉统一。fetch 失败或加载中走下面的 React fallback。
+  const { data: cmsData } = useCmsFooter()
+  if (cmsData?.footerHtml && props.variant !== 'mini') {
+    return (
+      <div className='kg-cms-footer-host'>
+        <style dangerouslySetInnerHTML={{ __html: CMS_FOOTER_STYLES }} />
+        <div dangerouslySetInnerHTML={{ __html: cmsData.footerHtml }} />
+      </div>
+    )
+  }
 
   // ── Mini variant：用于 auth / 短表单页。单行布局，不堆叠 brand block。──
   // 用户在登录注册页核心任务是填表，footer 应该最低存在感但仍有品牌信息。

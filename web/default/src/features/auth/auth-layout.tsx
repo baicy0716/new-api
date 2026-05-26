@@ -36,7 +36,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             </div>
           </div>
         </main>
-        <Footer variant='mini' />
+        <Footer />
       </div>
     </PublicLayout>
   )
