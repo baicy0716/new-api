@@ -25,8 +25,7 @@ import { useTopNavLinks } from '@/hooks/use-top-nav-links'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { LanguageSwitcher } from '@/components/language-switcher'
-import { NotificationButton } from '@/components/notification-button'
-import { NotificationDialog } from '@/components/notification-dialog'
+import { NotificationPopover } from '@/components/notification-popover'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { defaultTopNavLinks } from '../config/top-nav.config'
@@ -144,9 +143,15 @@ export function AppHeader({
           <div className='ms-auto flex shrink-0 items-center gap-2 sm:gap-3'>
             {showSearch && <Search />}
             {showNotifications && (
-              <NotificationButton
+              <NotificationPopover
+                open={notifications.popoverOpen}
+                onOpenChange={notifications.setPopoverOpen}
                 unreadCount={notifications.unreadCount}
-                onClick={() => notifications.openDialog()}
+                activeTab={notifications.activeTab}
+                onTabChange={notifications.setActiveTab}
+                notice={notifications.notice}
+                announcements={notifications.announcements}
+                loading={notifications.loading}
               />
             )}
             <LanguageSwitcher />
@@ -155,19 +160,6 @@ export function AppHeader({
           </div>
         )}
       </Header>
-
-      {showNotifications && (
-        <NotificationDialog
-          open={notifications.dialogOpen}
-          onOpenChange={notifications.setDialogOpen}
-          activeTab={notifications.activeTab}
-          onTabChange={notifications.setActiveTab}
-          notice={notifications.notice}
-          announcements={notifications.announcements}
-          loading={notifications.loading}
-          onCloseToday={notifications.closeToday}
-        />
-      )}
     </>
   )
 }

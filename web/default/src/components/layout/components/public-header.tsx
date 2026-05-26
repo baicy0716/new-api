@@ -34,8 +34,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
 import { LanguageSwitcher } from '@/components/language-switcher'
-import { NotificationButton } from '@/components/notification-button'
-import { NotificationDialog } from '@/components/notification-dialog'
+import { NotificationPopover } from '@/components/notification-popover'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { defaultTopNavLinks } from '../config/top-nav.config'
@@ -360,9 +359,15 @@ export function PublicHeader(props: PublicHeaderProps) {
                 {showLanguageSwitcher && <LanguageSwitcher />}
                 {showThemeSwitch && <ThemeSwitch />}
                 {showNotifications && (
-                  <NotificationButton
+                  <NotificationPopover
+                    open={notifications.popoverOpen}
+                    onOpenChange={notifications.setPopoverOpen}
                     unreadCount={notifications.unreadCount}
-                    onClick={() => notifications.openDialog()}
+                    activeTab={notifications.activeTab}
+                    onTabChange={notifications.setActiveTab}
+                    notice={notifications.notice}
+                    announcements={notifications.announcements}
+                    loading={notifications.loading}
                   />
                 )}
 
@@ -521,18 +526,7 @@ export function PublicHeader(props: PublicHeaderProps) {
         </div>
       </div>
 
-      {showNotifications && (
-        <NotificationDialog
-          open={notifications.dialogOpen}
-          onOpenChange={notifications.setDialogOpen}
-          activeTab={notifications.activeTab}
-          onTabChange={notifications.setActiveTab}
-          notice={notifications.notice}
-          announcements={notifications.announcements}
-          loading={notifications.loading}
-          onCloseToday={notifications.closeToday}
-        />
-      )}
+      {/* notification popover now lives inline above with the icon button */}
     </>
   )
 }
