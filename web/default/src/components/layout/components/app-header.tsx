@@ -79,7 +79,7 @@ export function AppHeader({
       <Header
         className={cn(
           !isPublicShellRoute &&
-            'border-border/60 bg-background/85 supports-[backdrop-filter]:bg-background/70 shadow-[0_10px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl dark:shadow-[0_10px_30px_rgba(0,0,0,0.18)]'
+            'border-sidebar-border bg-background/85 supports-[backdrop-filter]:bg-background/70 backdrop-blur-xl border-b'
         )}
         contentClassName={cn(!isPublicShellRoute && 'items-center')}
       >
