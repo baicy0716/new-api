@@ -69,12 +69,13 @@ export function AppHeader({
     { title: t('API Keys'), href: '/keys' },
     { title: t('Wallet'), href: '/wallet' },
   ]
-  const links =
-    dynamicLinks.length > 0
+  // 路由分流：public shell (/share/* etc.) 用 dynamic CMS nav（10+ 项），
+  // 登录后台用精简 console nav（4 项），避免在 dashboard 头部塞 10 个链接溢出。
+  const links = isPublicShellRoute
+    ? dynamicLinks.length > 0
       ? dynamicLinks
-      : navLinks.length > 0
-        ? navLinks
-        : consoleLinks
+      : navLinks
+    : consoleLinks
   const { systemName, logo, loading, logoLoaded } = useSystemConfig()
   const notifications = useNotifications()
 

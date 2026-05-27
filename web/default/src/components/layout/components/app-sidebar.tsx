@@ -20,9 +20,15 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { MOTION_TRANSITION, MOTION_VARIANTS } from '@/lib/motion'
 import { useLayout } from '@/context/layout-provider'
 import { useSidebarView } from '@/hooks/use-sidebar-view'
-import { Sidebar, SidebarContent, SidebarRail } from '@/components/ui/sidebar'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarRail,
+} from '@/components/ui/sidebar'
 import { NavGroup } from './nav-group'
 import { SidebarViewHeader } from './sidebar-view-header'
+import { SystemBrand } from './system-brand'
 
 /**
  * Application sidebar.
@@ -48,7 +54,16 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible={collapsible} variant={variant}>
-      {view && <SidebarViewHeader view={view} />}
+      {view ? (
+        <SidebarViewHeader view={view} />
+      ) : (
+        /* Root view：恢复 fork 原本的品牌头，保持「侧边栏最上方 logo」的用户预期。
+           upstream rc.10 把 SidebarHeader 默认拿掉了，只在 drilled-in 视图显示
+           "← back"，但这破坏了我们的 brand 露出。所以 root 时显式渲染 SystemBrand。 */
+        <SidebarHeader className='border-sidebar-border border-b px-2 py-2'>
+          <SystemBrand variant='sidebar' />
+        </SidebarHeader>
+      )}
 
       <SidebarContent className='py-2'>
         <AnimatePresence mode='wait' initial={false}>
