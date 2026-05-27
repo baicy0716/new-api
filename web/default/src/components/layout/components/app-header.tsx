@@ -16,6 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { ChevronDown } from 'lucide-react'
 import { Link, useRouterState } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
@@ -28,6 +29,12 @@ import { LanguageSwitcher } from '@/components/language-switcher'
 import { NotificationPopover } from '@/components/notification-popover'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { defaultTopNavLinks } from '../config/top-nav.config'
 import { type TopNavLink } from '../types'
 import { Header } from './header'
@@ -63,69 +70,97 @@ export function AppHeader({
     pathname === '/' || pathname === '/share' || pathname.startsWith('/share/')
 
   const dynamicLinks = useTopNavLinks()
-  const consoleLinks: TopNavLink[] = [
-    { title: t('Overview'), href: '/dashboard/overview' },
-    { title: t('Playground'), href: '/playground' },
-    { title: t('API Keys'), href: '/keys' },
-    { title: t('Wallet'), href: '/wallet' },
-  ]
-  // 路由分流：public shell (/share/* etc.) 用 dynamic CMS nav（10+ 项），
-  // 登录后台用精简 console nav（4 项），避免在 dashboard 头部塞 10 个链接溢出。
-  const links = isPublicShellRoute
-    ? dynamicLinks.length > 0
-      ? dynamicLinks
-      : navLinks
-    : consoleLinks
+  const links = dynamicLinks.length > 0 ? dynamicLinks : navLinks
+  // 主+溢出：把首 5 项作为视觉主链接，剩下塞进"更多"下拉。跟 public-header 的
+  // CMS variant 一样的分割逻辑，保证 dashboard 头部 10 个链接不挤爆容器，
+  // 同时用户仍能进去任何一个 share 页（点 logo 回主站，点更多看其余 5 项）。
+  const PRIMARY_LIMIT = 5
+  const primaryLinks = links.slice(0, PRIMARY_LIMIT)
+  const overflowLinks = links.slice(PRIMARY_LIMIT)
   const { systemName, logo, loading, logoLoaded } = useSystemConfig()
   const notifications = useNotifications()
 
   const leftSection =
     leftContent ||
     (showTopNav ? (
-      <div
-        className={cn(
-          'flex min-w-0 flex-1 items-center gap-3 md:gap-4',
-          !isPublicShellRoute && 'justify-center'
-        )}
-      >
-        {isPublicShellRoute ? (
-          <Link
-            to='/share'
-            className='hidden min-w-0 shrink-0 items-center gap-2 md:flex'
-          >
-            <div className='bg-muted/40 flex size-8 shrink-0 items-center justify-center rounded-xl border'>
-              {loading ? (
-                <Skeleton className='size-6 rounded-lg' />
-              ) : (
-                <HeaderLogo
-                  src={logo}
-                  loading={loading}
-                  logoLoaded={logoLoaded}
-                  className='size-6 rounded-lg object-contain'
-                />
-              )}
-            </div>
-            <div className='hidden min-w-0 xl:block'>
-              {loading ? (
-                <Skeleton className='h-4 w-28' />
-              ) : (
-                <span className='block truncate text-sm font-semibold tracking-tight'>
-                  {systemName}
-                </span>
-              )}
-            </div>
-          </Link>
-        ) : null}
-
-        {links.length > 0 ? (
-          <TopNav
-            links={links}
-            className={cn(
-              'min-w-0',
-              isPublicShellRoute ? 'flex-1' : 'max-w-full flex-none'
+      <div className='flex min-w-0 flex-1 items-center gap-3 md:gap-4'>
+        {/* 品牌永远露出（之前只在 isPublicShellRoute 时才有 → dashboard
+           上侧边栏顶部 logo 不见而且头部 nav 没 logo，看着不平衡） */}
+        <Link
+          to='/share'
+          className='hidden min-w-0 shrink-0 items-center gap-2 md:flex'
+        >
+          <div className='bg-muted/40 flex size-8 shrink-0 items-center justify-center rounded-xl border'>
+            {loading ? (
+              <Skeleton className='size-6 rounded-lg' />
+            ) : (
+              <HeaderLogo
+                src={logo}
+                loading={loading}
+                logoLoaded={logoLoaded}
+                className='size-6 rounded-lg object-contain'
+              />
             )}
-            variant={isPublicShellRoute ? 'plain' : 'pill'}
-          />
+          </div>
+          <div className='hidden min-w-0 xl:block'>
+            {loading ? (
+              <Skeleton className='h-4 w-28' />
+            ) : (
+              <span className='block truncate text-sm font-semibold tracking-tight'>
+                {systemName}
+              </span>
+            )}
+          </div>
+        </Link>
+
+        {primaryLinks.length > 0 ? (
+          <div className='flex min-w-0 flex-1 items-center gap-1'>
+            <TopNav
+              links={primaryLinks}
+              className={cn(
+                'min-w-0',
+                isPublicShellRoute ? 'flex-1' : 'flex-none'
+              )}
+              variant={isPublicShellRoute ? 'plain' : 'pill'}
+            />
+            {/* 溢出"更多"下拉：把 PRIMARY_LIMIT 之后的链接收纳进来 */}
+            {overflowLinks.length > 0 ? (
+              <DropdownMenu modal={false}>
+                <DropdownMenuTrigger
+                  render={
+                    <button
+                      className={cn(
+                        'inline-flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5 text-[13px] font-medium whitespace-nowrap',
+                        'text-muted-foreground hover:text-foreground transition-colors'
+                      )}
+                    />
+                  }
+                >
+                  <span>{t('更多')}</span>
+                  <ChevronDown className='size-3.5 opacity-70' />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align='start'
+                  sideOffset={8}
+                  className='w-44 rounded-2xl p-1.5'
+                >
+                  {overflowLinks.map((link, i) => (
+                    <DropdownMenuItem
+                      key={i}
+                      render={
+                        <Link
+                          to={link.href}
+                          className='flex w-full items-center rounded-xl px-3 py-2 text-sm'
+                        />
+                      }
+                    >
+                      {t(link.title)}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : null}
+          </div>
         ) : null}
       </div>
     ) : null)
