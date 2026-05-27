@@ -33,24 +33,30 @@ type AuthenticatedLayoutProps = {
 export function AuthenticatedLayout(props: AuthenticatedLayoutProps) {
   const defaultOpen = getCookie('sidebar_state') !== 'false'
 
+  // fork 历来的布局：sidebar 左侧（占满高度，logo 在最上）+ 右侧上下分（header
+  // 在上、content 在下）。这样 sidebar-top-logo 跟 header-nav 天然水平同排。
+  // upstream rc.10 改成了「header 全宽顶部 + sidebar 在 header 下面」，
+  // 在 sidebar logo 已经放回的前提下会跟 header nav 不在一行；改回。
   return (
     <LayoutProvider>
       <SearchProvider>
-        <SidebarProvider defaultOpen={defaultOpen} className='flex-col'>
+        <SidebarProvider defaultOpen={defaultOpen}>
           <SkipToMain />
-          <AppHeader />
-          <div className='flex min-h-0 w-full flex-1'>
+          <div className='flex min-h-svh w-full'>
             <AppSidebar />
-            <SidebarInset
-              className={cn(
-                '@container/content',
-                'h-[calc(100svh-var(--app-header-height,0px))]',
-                'min-h-0 overflow-hidden',
-                'peer-data-[variant=inset]:h-[calc(100svh-var(--app-header-height,0px)-(var(--spacing)*4))]'
-              )}
-            >
-              {props.children ?? <AnimatedOutlet />}
-            </SidebarInset>
+            <div className='flex min-w-0 flex-1 flex-col [--app-header-height:4.5rem]'>
+              <AppHeader />
+              <SidebarInset
+                className={cn(
+                  '@container/content',
+                  'h-[calc(100svh-var(--app-header-height,0px))]',
+                  'min-h-0 overflow-hidden',
+                  'peer-data-[variant=inset]:h-[calc(100svh-var(--app-header-height,0px)-(var(--spacing)*4))]'
+                )}
+              >
+                {props.children ?? <AnimatedOutlet />}
+              </SidebarInset>
+            </div>
           </div>
         </SidebarProvider>
       </SearchProvider>

@@ -59,8 +59,10 @@ export function AppSidebar() {
       ) : (
         /* Root view：恢复 fork 原本的品牌头，保持「侧边栏最上方 logo」的用户预期。
            upstream rc.10 把 SidebarHeader 默认拿掉了，只在 drilled-in 视图显示
-           "← back"，但这破坏了我们的 brand 露出。所以 root 时显式渲染 SystemBrand。 */
-        <SidebarHeader className='border-sidebar-border border-b px-2 py-2'>
+           "← back"，但这破坏了我们的 brand 露出。所以 root 时显式渲染 SystemBrand。
+           高度跟 AppHeader 对齐（h-[4.5rem]），底部 border 跟 header bottom 同 Y，
+           sidebar-top-logo 跟 header-nav 水平同排。 */
+        <SidebarHeader className='border-sidebar-border h-[4.5rem] flex-row items-center border-b px-3'>
           <SystemBrand variant='sidebar' />
         </SidebarHeader>
       )}
