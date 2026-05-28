@@ -54,7 +54,10 @@ func (*StripeAdaptor) RequestAmount(c *gin.Context, req *StripePayRequest) {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "获取用户分组失败"})
 		return
 	}
-	payMoney := getStripePayMoney(float64(req.Amount), group)
+	// 用跟微信/易支付一致的 getPayMoney（amount × Price × ratio × discount），
+	// Price=1 时充值 10 折后 = ¥8。原 getStripePayMoney 多乘了 StripeUnitPrice
+	// (0.34) 算出 ¥2.72，跟前端"实付 8"和其他支付渠道都对不上。
+	payMoney := getPayMoney(req.Amount, group)
 	if payMoney <= 0.01 {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "充值金额过低"})
 		return
@@ -90,10 +93,11 @@ func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
 	user, _ := model.GetUserById(id, false)
 	group, _ := model.GetUserGroup(id, true)
 	chargedMoney := GetChargedAmount(float64(req.Amount), *user)
-	// 实付金额（人民币，含折扣 + 分组倍率），跟 RequestAmount 显示给用户的一致。
+	// 实付金额（人民币，含折扣 + 分组倍率），用 getPayMoney 跟微信/易支付和
+	// RequestAmount 显示给用户的完全一致（充值 10 折后 ¥8）。
 	// 注意：到账额度由 model.Recharge 按 TopUp.Amount(单位数) 计算，跟这里
 	// 的收款金额无关，所以改收款金额不影响用户拿到的额度。
-	payMoney := getStripePayMoney(float64(req.Amount), group)
+	payMoney := getPayMoney(req.Amount, group)
 
 	reference := fmt.Sprintf("new-api-ref-%d-%d-%s", user.Id, time.Now().UnixMilli(), randstr.String(4))
 	referenceId := "ref_" + common.Sha1([]byte(reference))

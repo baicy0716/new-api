@@ -206,6 +206,15 @@ export function RechargeFormCard({
       }
       contentClassName='space-y-4 sm:space-y-6'
     >
+      {/* 币种说明：站内金额以 $ 符号展示，但实际计价为人民币 */}
+      <Alert>
+        <AlertDescription className='text-xs leading-relaxed'>
+          {t(
+            '本站币种展示为美元标识，实际消费、充值、套餐均以人民币计价。'
+          )}
+        </AlertDescription>
+      </Alert>
+
       {/* Online Topup Section */}
       {hasAnyTopup ? (
         <div className='space-y-4 sm:space-y-6'>
