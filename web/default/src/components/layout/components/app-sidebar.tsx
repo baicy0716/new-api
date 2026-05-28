@@ -73,7 +73,7 @@ function SidebarTopBrand() {
  * in the registry; this component requires no changes.
  */
 export function AppSidebar() {
-  const { collapsible, variant } = useLayout()
+  const { collapsible } = useLayout()
   const { key, view, navGroups } = useSidebarView()
   const shouldReduce = useReducedMotion()
 
@@ -81,10 +81,15 @@ export function AppSidebar() {
   // 内部 'fixed top-[var(--app-header-height)]' 把整个 sidebar 推下 48px，
   // SystemBrand 跟 header nav 不在一条 Y 上。fork 原来 HEAD 就有这个设置，
   // 合 upstream 时丢了。
+  //
+  // 强制 variant='sidebar'（不用 useLayout 的 'inset' 默认）：inset 会给
+  // sidebar 容器加 p-2 内边距，把内容下推 8px → sidebar header border 比
+  // app header border 低 8px。强制 sidebar variant 让 sidebar 顶到 y=0，
+  // 两个 header 的 border 严格在同一条 Y。
   return (
     <Sidebar
       collapsible={collapsible}
-      variant={variant}
+      variant='sidebar'
       className='[--app-header-height:0px]'
     >
       {view ? (
