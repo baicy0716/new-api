@@ -16,6 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { Link } from '@tanstack/react-router'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { MOTION_TRANSITION, MOTION_VARIANTS } from '@/lib/motion'
 import { useLayout } from '@/context/layout-provider'
@@ -28,7 +29,31 @@ import {
 } from '@/components/ui/sidebar'
 import { NavGroup } from './nav-group'
 import { SidebarViewHeader } from './sidebar-view-header'
-import { SystemBrand } from './system-brand'
+
+const KG_LOGO_URL = 'https://i.imgur.com/7Tkqn1t.png'
+
+/** Sidebar 顶部紧凑品牌：text-sm + size-8 logo，跟 nav 视觉同等权重，
+ *  天然跟 nav 文字 baseline 居中对齐。不复用 SystemBrand 是因为它
+ *  套了 SidebarMenuButton size=lg + h-auto + py-2 + size-11 image，
+ *  实际撑出 ~60px 高度的图块，在 4.5rem header 里视觉偏上一截。 */
+function SidebarTopBrand() {
+  return (
+    <Link
+      to='/share'
+      className='flex h-full items-center gap-2 text-foreground transition-colors hover:opacity-90'
+      aria-label='KuaiGouAI · 首页'
+    >
+      <img
+        src={KG_LOGO_URL}
+        alt='KuaiGouAI'
+        className='size-8 shrink-0 rounded-lg object-contain'
+      />
+      <span className='text-[15px] font-semibold tracking-tight leading-none'>
+        KuaiGou<span className='ml-px font-serif text-[0.95em] italic text-blue-500 dark:text-blue-300'>AI</span>
+      </span>
+    </Link>
+  )
+}
 
 /**
  * Application sidebar.
@@ -65,13 +90,11 @@ export function AppSidebar() {
       {view ? (
         <SidebarViewHeader view={view} />
       ) : (
-        /* Root view：恢复 fork 原本的品牌头，保持「侧边栏最上方 logo」的用户预期。
-           upstream rc.10 把 SidebarHeader 默认拿掉了，只在 drilled-in 视图显示
-           "← back"，但这破坏了我们的 brand 露出。所以 root 时显式渲染 SystemBrand。
-           高度跟 AppHeader 对齐（h-[4.5rem]），底部 border 跟 header bottom 同 Y，
-           sidebar-top-logo 跟 header-nav 水平同排。 */
-        <SidebarHeader className='border-sidebar-border h-[4.5rem] flex-row items-center border-b px-3'>
-          <SystemBrand variant='sidebar' />
+        /* Root view：紧凑 brand 头，h-[4.5rem] 跟 AppHeader 同高 + border-b
+           跟 header bottom 连一条横线。 p-0 消掉 SidebarHeader 默认的 p-2，
+           内部 Link 用 h-full + items-center 让品牌严格居中在 72px 容器。 */
+        <SidebarHeader className='border-sidebar-border h-[4.5rem] border-b p-0 px-4'>
+          <SidebarTopBrand />
         </SidebarHeader>
       )}
 
