@@ -52,8 +52,16 @@ export function AppSidebar() {
   const { key, view, navGroups } = useSidebarView()
   const shouldReduce = useReducedMotion()
 
+  // 重置 --app-header-height 为 0：theme.css 全局设了 3rem，导致 sidebar
+  // 内部 'fixed top-[var(--app-header-height)]' 把整个 sidebar 推下 48px，
+  // SystemBrand 跟 header nav 不在一条 Y 上。fork 原来 HEAD 就有这个设置，
+  // 合 upstream 时丢了。
   return (
-    <Sidebar collapsible={collapsible} variant={variant}>
+    <Sidebar
+      collapsible={collapsible}
+      variant={variant}
+      className='[--app-header-height:0px]'
+    >
       {view ? (
         <SidebarViewHeader view={view} />
       ) : (
