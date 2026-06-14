@@ -39,7 +39,7 @@ const KG_LOGO_URL = 'https://i.imgur.com/7Tkqn1t.png'
 function SidebarTopBrand() {
   return (
     <Link
-      to='/share'
+      to='/'
       className='flex h-full items-center gap-2 text-foreground transition-colors hover:opacity-90'
       aria-label='KuaiGouAI · 首页'
     >

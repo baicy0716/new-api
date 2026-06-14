@@ -41,7 +41,7 @@ export function SystemBrand(props: SystemBrandProps) {
   if (variant === 'inline') {
     return (
       <Link
-        to='/share'
+        to='/'
         aria-label={t('Go to home')}
         className={cn(
           'text-foreground inline-flex h-7 items-center gap-1.5 rounded-md px-1.5 text-sm font-medium transition-colors outline-none select-none',
@@ -66,7 +66,7 @@ export function SystemBrand(props: SystemBrandProps) {
         <SidebarMenuButton
           size='lg'
           className='hover:text-sidebar-foreground active:text-sidebar-foreground h-auto cursor-default rounded-2xl px-2 py-2 hover:bg-transparent active:bg-transparent'
-          render={<Link to='/share' />}
+          render={<Link to='/' />}
         >
           <div className='flex aspect-square size-11 items-center justify-center overflow-hidden rounded-2xl'>
             <img
