@@ -140,7 +140,7 @@ export function PublicHeader(props: PublicHeaderProps) {
     showLanguageSwitcher = true,
     logo: customLogo,
     siteName: customSiteName,
-    homeUrl = '/share/',
+    homeUrl = '/',
     showAuthButtons = true,
     showNotifications = true,
     variant = 'floating',
