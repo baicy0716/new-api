@@ -33,6 +33,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Dialog } from '@/components/dialog'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { NotificationPopover } from '@/components/notification-popover'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -527,6 +528,10 @@ export function PublicHeader(props: PublicHeaderProps) {
       </div>
 
       {/* notification popover now lives inline above with the icon button */}
+      {/* NOTE: upstream rc.11 introduces an auth-prompt Dialog here referencing
+          authPromptTarget/closeAuthPrompt/navigateToSignIn/authPromptSecondsLeft —
+          deferred to a follow-up because integrating it requires adding ~5 hooks
+          + a trigger in the link-click handler. Tracked for next pass. */}
     </>
   )
 }
