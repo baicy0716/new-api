@@ -11,7 +11,15 @@
 */
 
 export function FloatingSupportButton() {
-  const supportUrl = 'https://api.kuaigouai.com/share/services?from=staging'
+  // 同源相对 URL：生产域名(api.kuaigouai.com)下 nginx 会把 /share/* 反代到
+  // smart-router 渲染工单页；staging 域名下也是直接跳到主站完整 URL。
+  // 用 location.host 判断当前是哪个环境
+  const onMainSite =
+    typeof window !== 'undefined' &&
+    /(^|\.)api\.kuaigouai\.com$/.test(window.location.host)
+  const supportUrl = onMainSite
+    ? '/share/services'
+    : 'https://api.kuaigouai.com/share/services'
   return (
     <a
       href={supportUrl}
