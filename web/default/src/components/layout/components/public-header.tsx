@@ -376,12 +376,12 @@ export function PublicHeader(props: PublicHeaderProps) {
                   <>
                     <div className='bg-border/40 mx-1 h-4 w-px' />
                     {loading ? (
-                      <Skeleton className='h-8 w-32 rounded-lg' />
+                      <Skeleton className='h-9 w-32 rounded-full' />
                     ) : isAuthenticated ? (
                       <div className='kg-shell-cta flex items-center gap-2'>
                         <Button
                           size='sm'
-                          className='kg-shell-btn kg-shell-btn-primary h-8 rounded-lg px-3.5 text-xs font-medium'
+                          className='kg-shell-btn kg-shell-btn-primary h-9 rounded-full px-4 text-sm font-medium'
                           render={<Link to='/share/console' />}
                         >
                           {t('控制中心')}
@@ -393,14 +393,14 @@ export function PublicHeader(props: PublicHeaderProps) {
                         <Button
                           size='sm'
                           variant='ghost'
-                          className='kg-shell-btn kg-shell-btn-ghost h-8 rounded-lg px-3.5 text-xs font-medium'
+                          className='kg-shell-btn kg-shell-btn-ghost h-9 rounded-full px-4 text-sm font-medium'
                           render={<Link to='/share/login' />}
                         >
                           {t('登录')}
                         </Button>
                         <Button
                           size='sm'
-                          className='kg-shell-btn kg-shell-btn-primary h-8 rounded-lg px-3.5 text-xs font-medium'
+                          className='kg-shell-btn kg-shell-btn-primary h-9 rounded-full px-4 text-sm font-medium'
                           render={<Link to='/share/register' />}
                         >
                           {t('免费注册')}
