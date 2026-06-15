@@ -22,11 +22,15 @@ export function FloatingSupportButton() {
   const supportUrl = onMainSite
     ? '/support'
     : 'https://api.kuaigouai.com/support'
+  // 主站：同标签页打开 /support，提交工单后 smart-router 用 history.back() 回到上一页。
+  // 非主站(staging 等)：跨站到主站工单页，仍用新标签页。
+  const linkProps = onMainSite
+    ? {}
+    : { target: '_blank' as const, rel: 'noopener noreferrer' }
   return (
     <a
       href={supportUrl}
-      target='_blank'
-      rel='noopener noreferrer'
+      {...linkProps}
       aria-label='客服'
       className='kg-fab-support'
     >
